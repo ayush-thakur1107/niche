@@ -1,0 +1,20 @@
+.appContainer {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-abyss);
+}
+
+.mainContent {
+  margin-left: 260px;
+  flex: 1;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .mainContent {
+    margin-left: 0;
+  }
+}

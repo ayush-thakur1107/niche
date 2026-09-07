@@ -1,0 +1,116 @@
+.nodeCard {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  min-width: 170px;
+  max-width: 250px;
+  box-shadow: var(--shadow-md);
+  cursor: grab;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  position: relative;
+  user-select: none;
+}
+
+.nodeCard:hover {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-lg), 0 0 16px rgba(226, 168, 87, 0.15);
+  transform: translateY(-2px);
+}
+
+.nodeCardSelected {
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 0 0 2px rgba(226, 168, 87, 0.35), var(--shadow-lg) !important;
+}
+
+.typeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.typeBadge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  border: 1px solid;
+}
+
+.learningStateBadge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--bg-abyss);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-faint);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.summary {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-faint);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+}
+
+.tagList {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+  max-width: 140px;
+}
+
+.tagPill {
+  color: var(--text-muted);
+}
+
+.connectionCount {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--accent-gold);
+}
+
+/* Custom XYFlow Handle styling */
+.customHandle {
+  width: 8px !important;
+  height: 8px !important;
+  background: var(--accent-gold) !important;
+  border: 2px solid var(--bg-surface) !important;
+  border-radius: 50% !important;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.customHandle:hover {
+  transform: scale(1.4);
+  background: #fff !important;
+}
