@@ -24,7 +24,8 @@ import {
   SectionType,
   LearningState,
   UncertaintyLevel,
-  LEARNING_STATE_LABELS
+  LEARNING_STATE_LABELS,
+  isCreativeWork
 } from '@/lib/types';
 import { ConnectionModal } from '@/components/atlas/ConnectionModal';
 import styles from './page.module.css';
@@ -259,23 +260,25 @@ export default function NodePage({
         </div>
 
         <div className={styles.metricsRow}>
-          <div>
-            <span style={{ color: 'var(--text-muted)' }}>Learning Competence: </span>
-            <select
-              value={node.learningState}
-              onChange={e => handleUpdateLearningState(Number(e.target.value) as LearningState)}
-              style={{
-                background: 'var(--bg-surface-raised)',
-                border: '1px solid var(--border-subtle)',
-                color: 'var(--accent-gold)',
-                fontWeight: 600
-              }}
-            >
-              {Object.entries(LEARNING_STATE_LABELS).map(([lvl, label]) => (
-                <option key={lvl} value={lvl}>Level {lvl} — {label}</option>
-              ))}
-            </select>
-          </div>
+          {!isCreativeWork(node.type) && (
+            <div>
+              <span style={{ color: 'var(--text-muted)' }}>Learning Competence: </span>
+              <select
+                value={node.learningState}
+                onChange={e => handleUpdateLearningState(Number(e.target.value) as LearningState)}
+                style={{
+                  background: 'var(--bg-surface-raised)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--accent-gold)',
+                  fontWeight: 600
+                }}
+              >
+                {Object.entries(LEARNING_STATE_LABELS).map(([lvl, label]) => (
+                  <option key={lvl} value={lvl}>Level {lvl} — {label}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <span style={{ color: 'var(--text-muted)' }}>State of Understanding: </span>

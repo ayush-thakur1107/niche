@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { X, ExternalLink, ArrowRight, Trash2, BookOpen, Compass } from 'lucide-react';
-import { NodeItem, ConnectionItem, LEARNING_STATE_LABELS } from '@/lib/types';
+import { NodeItem, ConnectionItem, LEARNING_STATE_LABELS, isCreativeWork } from '@/lib/types';
 import styles from './InspectorDrawer.module.css';
 
 interface InspectorDrawerProps {
@@ -37,9 +37,11 @@ export function InspectorDrawer({
             >
               {node.type}
             </span>
-            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-              Lvl {node.learningState} · {LEARNING_STATE_LABELS[node.learningState]}
-            </span>
+            {!isCreativeWork(node.type) && (
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                Lvl {node.learningState} · {LEARNING_STATE_LABELS[node.learningState]}
+              </span>
+            )}
           </div>
           <div className={styles.title}>{node.title}</div>
         </div>

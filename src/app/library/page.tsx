@@ -86,8 +86,8 @@ export default function LibraryPage() {
                 </div>
 
                 <div className={styles.bookFooter}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    Lvl {book.learningState}
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'capitalize' }}>
+                    {book.uncertaintyLevel ? book.uncertaintyLevel.replace('_', ' ') : 'Canon Text'}
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-gold)', fontSize: '0.76rem', fontWeight: 600 }}>
                     <span>Open</span>

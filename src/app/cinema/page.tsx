@@ -130,8 +130,8 @@ export default function CinemaPage() {
                   <p className={styles.posterDesc}>{m.summary}</p>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid var(--border-faint)' }}>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                      Lvl {m.learningState}
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'capitalize' }}>
+                      {m.uncertaintyLevel ? m.uncertaintyLevel.replace('_', ' ') : 'Film Canon'}
                     </span>
                     <ArrowRight size={13} color="var(--accent-gold)" />
                   </div>

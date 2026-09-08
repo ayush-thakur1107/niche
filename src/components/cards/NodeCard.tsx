@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { NodeItem, UncertaintyLevel } from '@/lib/types';
+import { NodeItem, UncertaintyLevel, isCreativeWork } from '@/lib/types';
 import styles from './NodeCard.module.css';
 
 interface NodeCardProps {
@@ -72,9 +72,11 @@ export function NodeCard({ node, className }: NodeCardProps) {
           {node.type}
         </span>
 
-        <span className={styles.levelTag}>
-          LVL {node.learningState}
-        </span>
+        {!isCreativeWork(node.type) && (
+          <span className={styles.levelTag}>
+            LVL {node.learningState}
+          </span>
+        )}
       </div>
 
       {/* Editorial Title */}

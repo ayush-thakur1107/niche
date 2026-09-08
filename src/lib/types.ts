@@ -24,6 +24,19 @@ export type NodeType =
   | 'QUOTE'
   | 'CUSTOM';
 
+export const CREATIVE_WORK_TYPES: NodeType[] = [
+  'MOVIE',
+  'BOOK',
+  'SONG',
+  'ALBUM',
+  'ARTIST'
+];
+
+export function isCreativeWork(type?: string | null): boolean {
+  if (!type) return false;
+  return CREATIVE_WORK_TYPES.includes(type.toUpperCase() as NodeType);
+}
+
 export type UncertaintyLevel =
   | 'known'
   | 'partially_understood'

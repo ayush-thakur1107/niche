@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, X, Globe, Sparkles } from 'lucide-react';
-import { NodeType, LearningState, LEARNING_STATE_LABELS } from '@/lib/types';
+import { NodeType, LearningState, LEARNING_STATE_LABELS, isCreativeWork } from '@/lib/types';
 import styles from '../navigation/CommandPalette.module.css';
 
 interface CreateNodeModalProps {
@@ -147,7 +147,7 @@ export function CreateNodeModal({ isOpen, onClose, onNodeCreated }: CreateNodeMo
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isCreativeWork(type) ? '1fr' : '1fr 1fr', gap: '12px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>
                 TYPE
@@ -163,20 +163,22 @@ export function CreateNodeModal({ isOpen, onClose, onNodeCreated }: CreateNodeMo
               </select>
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                LEARNING STATE (0–7)
-              </label>
-              <select
-                value={learningState}
-                onChange={e => setLearningState(Number(e.target.value) as LearningState)}
-                style={{ width: '100%' }}
-              >
-                {Object.entries(LEARNING_STATE_LABELS).map(([lvl, label]) => (
-                  <option key={lvl} value={lvl}>{lvl} — {label}</option>
-                ))}
-              </select>
-            </div>
+            {!isCreativeWork(type) && (
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  LEARNING STATE (0–7)
+                </label>
+                <select
+                  value={learningState}
+                  onChange={e => setLearningState(Number(e.target.value) as LearningState)}
+                  style={{ width: '100%' }}
+                >
+                  {Object.entries(LEARNING_STATE_LABELS).map(([lvl, label]) => (
+                    <option key={lvl} value={lvl}>{lvl} — {label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <div>

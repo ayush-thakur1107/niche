@@ -3,7 +3,7 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { Share2 } from 'lucide-react';
-import { NodeItem, NodeType } from '@/lib/types';
+import { NodeItem, NodeType, isCreativeWork } from '@/lib/types';
 import styles from './CustomNode.module.css';
 
 const TYPE_COLORS: Record<string, { color: string; bg: string; border: string }> = {
@@ -50,9 +50,11 @@ export const CustomNode = memo(({ data, selected }: NodeProps) => {
           {node.type}
         </span>
 
-        <span className={styles.learningStateBadge} title={`Learning state: Level ${node.learningState}`}>
-          Lvl {node.learningState}
-        </span>
+        {!isCreativeWork(node.type) && (
+          <span className={styles.learningStateBadge} title={`Learning state: Level ${node.learningState}`}>
+            Lvl {node.learningState}
+          </span>
+        )}
       </div>
 
       <div className={styles.title}>{node.title}</div>
