@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 @import './variables.css';
+@import 'lenis/dist/lenis.css';
 
 /* CSS Reset & Base */
 *, *::before, *::after {
@@ -8,8 +9,16 @@
   padding: 0;
 }
 
-html, body {
-  height: 100%;
+html {
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: auto;
+}
+
+body {
+  min-height: 100vh;
   width: 100%;
   background-color: var(--bg-abyss);
   color: var(--text-primary);
@@ -19,6 +28,25 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Lenis Scroll Smoothness Compatibility */
+html.lenis,
+html.lenis body {
+  height: auto !important;
+  min-height: 100vh;
+}
+
+/* Custom Cursor: Hide default browser cursor on desktop fine-pointer devices */
+@media (pointer: fine) {
+  html, body, a, button, [role="button"], select, div, span, p, h1, h2, h3, h4, h5, h6, section, aside, main, header, footer {
+    cursor: none !important;
+  }
+
+  /* Keep natural text cursor inside inputs and textareas */
+  input, textarea {
+    cursor: text !important;
+  }
 }
 
 /* Subtle procedural archive film grain texture overlay (~3.5% opacity) */
@@ -31,7 +59,7 @@ body::before {
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   pointer-events: none;
-  z-index: 9999;
+  z-index: 99990;
 }
 
 /* Faint radial vignette darkening toward the edges of viewport */

@@ -48,6 +48,8 @@ export function SmartCursor() {
       style={{
         x: cursorX,
         y: cursorY,
+        translateX: '-50%',
+        translateY: '-50%'
       }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{
