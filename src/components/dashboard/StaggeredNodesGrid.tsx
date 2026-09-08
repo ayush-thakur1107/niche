@@ -46,6 +46,25 @@ export function StaggeredNodesGrid({ nodes }: StaggeredNodesGridProps) {
     return styles.colSpan4;
   };
 
+  if (nodes.length === 0) {
+    return (
+      <div
+        style={{
+          padding: '48px 24px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'rgba(14, 15, 22, 0.4)',
+          textAlign: 'center',
+          color: '#8e8e9c',
+          fontFamily: 'var(--font-mono, monospace)',
+          fontSize: '0.8rem'
+        }}
+      >
+        <div style={{ color: 'var(--accent-gold)', marginBottom: '6px' }}>// UNIVERSE BLANK SLATE</div>
+        <div>No entities placed yet. Visit the Atlas canvas to create your first node.</div>
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} className={styles.grid}>
       {nodes.map((node, index) => (

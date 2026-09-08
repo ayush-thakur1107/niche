@@ -24,8 +24,12 @@ interface DatabaseSchema {
   initialized?: boolean;
 }
 
-const DATA_DIR = path.join(process.cwd(), '.data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join('/tmp', '.data')
+  : path.join(process.cwd(), '.data');
 const DB_FILE = path.join(DATA_DIR, 'universe.json');
+
+let inMemoryDb: DatabaseSchema | null = null;
 
 function ensureDirectoryExistence(filePath: string) {
   const dirname = path.dirname(filePath);
@@ -35,11 +39,21 @@ function ensureDirectoryExistence(filePath: string) {
 }
 
 function getInitialDatabase(): DatabaseSchema {
-  return { ...getSeedDatabase(), initialized: true };
+  return {
+    nodes: [],
+    contents: [],
+    connections: [],
+    positions: {},
+    sources: [],
+    inbox: [],
+    events: [],
+    initialized: true
+  };
 }
 
 export function readDatabase(): DatabaseSchema {
   try {
+    if (inMemoryDb) return inMemoryDb;
     if (!fs.existsSync(DB_FILE)) {
       const initial = getInitialDatabase();
       writeDatabase(initial);
@@ -47,13 +61,7 @@ export function readDatabase(): DatabaseSchema {
     }
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
-    // If never initialized and empty, seed it; otherwise respect current state (including cleared/empty)
-    if (!parsed.initialized && (!parsed.nodes || parsed.nodes.length === 0)) {
-      const initial = getInitialDatabase();
-      writeDatabase(initial);
-      return initial;
-    }
-    return {
+    const result: DatabaseSchema = {
       nodes: parsed.nodes || [],
       contents: parsed.contents || [],
       connections: parsed.connections || [],
@@ -63,36 +71,41 @@ export function readDatabase(): DatabaseSchema {
       events: parsed.events || [],
       initialized: parsed.initialized ?? true
     };
+    inMemoryDb = result;
+    return result;
   } catch (error) {
+    if (inMemoryDb) return inMemoryDb;
     console.error('Failed to read universe database:', error);
     return getInitialDatabase();
   }
 }
 
 export function clearAllNodesAndConnections(): void {
-  const current = readDatabase();
   const cleared: DatabaseSchema = {
-    ...current,
     nodes: [],
     contents: [],
     connections: [],
     positions: {},
+    sources: [],
+    inbox: [],
+    events: [],
     initialized: true
   };
   writeDatabase(cleared);
 }
 
 export function restoreSeedDatabase(): void {
-  const initial = getInitialDatabase();
-  writeDatabase(initial);
+  const seed: DatabaseSchema = { ...getSeedDatabase(), initialized: true };
+  writeDatabase(seed);
 }
 
 export function writeDatabase(data: DatabaseSchema): void {
+  inMemoryDb = data;
   try {
     ensureDirectoryExistence(DB_FILE);
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error) {
-    console.error('Failed to write universe database:', error);
+    console.warn('Filesystem write notice (using in-memory cache):', error);
   }
 }
 
