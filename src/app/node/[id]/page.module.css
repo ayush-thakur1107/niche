@@ -57,15 +57,15 @@
 
 .title {
   font-family: var(--font-serif);
-  font-size: 3.2rem;
+  font-size: clamp(1.85rem, 3.0vw, 2.4rem);
   font-weight: 500;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
 .summary {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.5;
   max-width: 800px;

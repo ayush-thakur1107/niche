@@ -25,16 +25,16 @@
 
 .title {
   font-family: var(--font-serif);
-  font-size: 3.2rem;
+  font-size: clamp(1.85rem, 3.0vw, 2.4rem);
   font-weight: 500;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
 .subtitle {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 0.95rem;
   font-style: italic;
   color: var(--text-secondary);
   margin-top: 6px;
@@ -90,10 +90,10 @@
 
 .bookTitle {
   font-family: var(--font-serif);
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .bookAuthor {

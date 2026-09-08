@@ -64,19 +64,19 @@
 /* Editorial Title */
 .title {
   font-family: var(--font-serif);
-  font-size: 1.38rem;
-  font-weight: 400;
+  font-size: 1.15rem;
+  font-weight: 500;
   color: #f2f2f5;
-  line-height: 1.18;
+  line-height: 1.22;
   letter-spacing: -0.015em;
   margin: 0;
   transition: color 0.15s ease;
 }
 
 .cardFeatured .title {
-  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-size: 1.28rem;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
 }
 
 .card:hover .title {
