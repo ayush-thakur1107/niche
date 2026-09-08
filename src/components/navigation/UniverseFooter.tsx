@@ -9,9 +9,10 @@ import {
   Sparkles,
   Film,
   BookA,
+  BookOpen,
   Lightbulb,
-  Atom,
-  Archive,
+  Music2,
+  Milestone,
   ArrowUpRight,
   Shuffle
 } from 'lucide-react';
@@ -62,12 +63,12 @@ export function UniverseFooter() {
       onClick: () => router.push('/cinema')
     },
     {
-      id: 'physics',
-      label: 'Orbital Field',
-      type: 'PHYSICS',
-      icon: Atom,
+      id: 'library',
+      label: 'Wisdom Archive',
+      type: 'LIBRARY',
+      icon: BookOpen,
       color: '#38bdf8',
-      onClick: () => router.push('/physics')
+      onClick: () => router.push('/library')
     },
     {
       id: 'vocabulary',
@@ -78,12 +79,12 @@ export function UniverseFooter() {
       onClick: () => router.push('/vocabulary')
     },
     {
-      id: 'museum',
-      label: 'Abandoned Curiosity',
-      type: 'MUSEUM',
-      icon: Archive,
-      color: '#c084fc',
-      onClick: () => router.push('/museum')
+      id: 'spotify',
+      label: 'Audio Sanctuary',
+      type: 'ATMOSPHERE',
+      icon: Music2,
+      color: '#1ed760',
+      onClick: () => router.push('/spotify')
     },
     {
       id: 'serendipity',
@@ -293,12 +294,9 @@ export function UniverseFooter() {
             Continuous intellectual expansion across history, philosophy, cinema, code, and physical discipline.
           </div>
 
-          <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             <Link href="/atlas" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
               Atlas
-            </Link>
-            <Link href="/lab" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
-              Interaction Lab
             </Link>
             <Link href="/cinema" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
               Cinema
@@ -306,11 +304,17 @@ export function UniverseFooter() {
             <Link href="/library" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
               Library
             </Link>
-            <Link href="/physics" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
-              Physics
+            <Link href="/ideas" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
+              Ideas
             </Link>
-            <Link href="/museum" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
-              Museum
+            <Link href="/roadmaps" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
+              Roadmaps
+            </Link>
+            <Link href="/fitness" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
+              Fitness
+            </Link>
+            <Link href="/spotify" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
+              Spotify
             </Link>
             <Link href="/me" style={{ color: '#8e8e9c', textDecoration: 'none' }}>
               Me

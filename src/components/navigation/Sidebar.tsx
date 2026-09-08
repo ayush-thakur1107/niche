@@ -17,9 +17,6 @@ import {
   User,
   Plus,
   Search,
-  Sparkles,
-  Atom,
-  Archive,
   Music2,
   ExternalLink
 } from 'lucide-react';
@@ -53,33 +50,36 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
       .catch(() => {});
   }, [pathname]);
 
-  const navLinks = [
+  const universeLinks = [
     { href: '/', label: 'Overview', icon: Compass },
-    { href: '/atlas', label: 'Atlas Universe', icon: Map, badge: stats.totalNodes },
-    { href: '/lab', label: 'Interaction Lab', icon: Sparkles },
+    { href: '/atlas', label: 'Atlas Universe', icon: Map, badge: stats.totalNodes }
+  ];
+
+  const disciplineLinks = [
     { href: '/cinema', label: 'Cinematheque', icon: Film },
     { href: '/library', label: 'Library', icon: BookOpen },
     { href: '/ideas', label: 'Ideas & Beliefs', icon: Lightbulb },
     { href: '/roadmaps', label: 'Roadmaps & Skills', icon: Milestone },
     { href: '/fitness', label: 'Body & Fitness', icon: Dumbbell },
-    { href: '/vocabulary', label: 'Vocabulary', icon: BookA },
-    { href: '/physics', label: 'Physics Lab', icon: Atom },
-    { href: '/museum', label: 'Museum (Curiosities)', icon: Archive },
+    { href: '/vocabulary', label: 'Vocabulary', icon: BookA }
+  ];
+
+  const evolutionLinks = [
     { href: '/timeline', label: 'Life Timeline', icon: History },
     { href: '/inbox', label: 'Inbox', icon: Inbox, badge: stats.inboxCount > 0 ? stats.inboxCount : undefined },
     { href: '/me', label: 'Me (Atlas of Self)', icon: User }
   ];
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={styles.sidebar} data-lenis-prevent="true">
       <div className={styles.brand}>
         <div className={styles.logoText}>Ayush Thakur</div>
         <div className={styles.domainTag}>ayushthakur.space</div>
       </div>
 
-      <nav className={styles.navSection}>
+      <nav className={styles.navSection} data-lenis-prevent="true">
         <div className={styles.sectionLabel}>The Universe</div>
-        {navLinks.slice(0, 3).map(link => {
+        {universeLinks.map(link => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
           return (
@@ -100,7 +100,7 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
         })}
 
         <div className={styles.sectionLabel}>Disciplines & Taste</div>
-        {navLinks.slice(3, 10).map(link => {
+        {disciplineLinks.map(link => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
           return (
@@ -118,7 +118,7 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
         })}
 
         <div className={styles.sectionLabel}>Evolution & Capture</div>
-        {navLinks.slice(10).map(link => {
+        {evolutionLinks.map(link => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
           return (

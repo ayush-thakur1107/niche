@@ -22,6 +22,10 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       smoothWheel: true,
       wheelMultiplier: 1.0,
       touchMultiplier: 1.8,
+      allowNestedScroll: true,
+      prevent: (node: HTMLElement) => {
+        return Boolean(node.closest('aside') || node.closest('[data-lenis-prevent]'));
+      },
     });
     lenisRef.current = lenis;
 

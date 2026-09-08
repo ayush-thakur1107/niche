@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, X, Sparkles, BookOpen, Film, Lightbulb, Atom, Compass } from 'lucide-react';
+import { Plus, X, Sparkles, BookOpen, Film, Lightbulb, Music2, Compass } from 'lucide-react';
 import { useInteractionStore } from '../store';
 
 export interface MorphAction {
@@ -75,12 +75,12 @@ export function MorphButton({
       onClick: () => window.location.href = '/library'
     },
     {
-      id: 'physics',
-      label: 'Physics Experiment',
-      sublabel: 'Scientific simulation & math model',
-      icon: Atom,
-      color: '#a78bfa',
-      onClick: () => window.location.href = '/physics'
+      id: 'spotify',
+      label: 'Sound Sanctuary',
+      sublabel: 'Audio atmosphere & frequency',
+      icon: Music2,
+      color: '#1ed760',
+      onClick: () => window.location.href = '/spotify'
     }
   ];
 
