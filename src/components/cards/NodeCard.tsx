@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Trash2 } from 'lucide-react';
 import { NodeItem, UncertaintyLevel, isCreativeWork } from '@/lib/types';
 import styles from './NodeCard.module.css';
 
@@ -10,6 +10,7 @@ interface NodeCardProps {
   node: NodeItem;
   isFeatured?: boolean;
   className?: string;
+  onDelete?: (nodeId: string) => void;
 }
 
 const TYPE_ACCENTS: Record<string, string> = {
@@ -44,11 +45,30 @@ const STATUS_CONFIG: Record<UncertaintyLevel, { label: string; color: string }> 
   question: { label: 'Question', color: '#56b6c2' }
 };
 
-export function NodeCard({ node, isFeatured = false, className }: NodeCardProps) {
+export function NodeCard({ node, isFeatured = false, className, onDelete }: NodeCardProps) {
   const accentColor = TYPE_ACCENTS[node.type] || '#e2a857';
   const statusInfo = STATUS_CONFIG[node.uncertaintyLevel] || {
     label: (node.uncertaintyLevel || '').replace('_', ' '),
     color: '#8e8e9c'
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (window.confirm(`Delete "${node.title}" from universe?`)) {
+      try {
+        const res = await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          if (onDelete) {
+            onDelete(node.id);
+          } else {
+            window.location.reload();
+          }
+        }
+      } catch (err) {
+        console.error('Failed to delete node:', err);
+      }
+    }
   };
 
   return (
@@ -64,7 +84,7 @@ export function NodeCard({ node, isFeatured = false, className }: NodeCardProps)
         aria-hidden="true"
       />
 
-      {/* Header: Monospace Eyebrow & Instrument-Panel Level */}
+      {/* Header: Monospace Eyebrow & Instrument-Panel Level & Delete */}
       <div className={styles.header}>
         <span
           className={styles.eyebrow}
@@ -73,11 +93,22 @@ export function NodeCard({ node, isFeatured = false, className }: NodeCardProps)
           {node.type}
         </span>
 
-        {!isCreativeWork(node.type) && (
-          <span className={styles.levelTag}>
-            LVL {node.learningState}
-          </span>
-        )}
+        <div className={styles.headerRight}>
+          {!isCreativeWork(node.type) && (
+            <span className={styles.levelTag}>
+              LVL {node.learningState}
+            </span>
+          )}
+          <button
+            type="button"
+            className={styles.deleteCardBtn}
+            onClick={handleDelete}
+            title={`Delete "${node.title}"`}
+            aria-label={`Delete "${node.title}"`}
+          >
+            <Trash2 size={12} />
+          </button>
+        </div>
       </div>
 
       {/* Editorial Title */}

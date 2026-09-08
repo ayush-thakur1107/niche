@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Film, Star, Play, ArrowRight, Eye, Calendar, Sparkles, Plus } from 'lucide-react';
+import { Film, Star, Play, ArrowRight, Eye, Calendar, Sparkles, Plus, Trash2 } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
 import { AddMovieModal } from '@/components/cinema/AddMovieModal';
@@ -31,6 +31,21 @@ export default function CinemaPage() {
 
   const handleMovieAdded = (newMovie: NodeItem) => {
     setMovies(prev => [newMovie, ...prev]);
+  };
+
+  const handleDeleteMovie = async (e: React.MouseEvent, movie: NodeItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Delete "${movie.title}" from film canon?`)) {
+      try {
+        const res = await fetch(`/api/nodes/${movie.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          setMovies(prev => prev.filter(m => m.id !== movie.id));
+        }
+      } catch (err) {
+        console.error('Failed to delete movie:', err);
+      }
+    }
   };
 
   const filteredMovies = movies.filter(m => {
@@ -185,6 +200,15 @@ export default function CinemaPage() {
                       backgroundImage: `url(${m.coverImage || 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&auto=format&fit=crop&q=80'})`
                     }}
                   >
+                    <button
+                      type="button"
+                      className={styles.deleteMovieBtn}
+                      onClick={(e) => handleDeleteMovie(e, m)}
+                      title={`Delete "${m.title}"`}
+                      aria-label={`Delete "${m.title}"`}
+                    >
+                      <Trash2 size={13} />
+                    </button>
                     <div className={styles.posterOverlay}>
                       <span className={styles.watchBadge}>WATCH</span>
                     </div>

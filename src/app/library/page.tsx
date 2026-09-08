@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, Star, ArrowRight, X, Sparkles, BookMarked, Plus } from 'lucide-react';
+import { BookOpen, Star, ArrowRight, X, Sparkles, BookMarked, Plus, Trash2 } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
 import { CreateNodeModal } from '@/components/common/CreateNodeModal';
@@ -28,6 +28,24 @@ export default function LibraryPage() {
       })
       .catch(() => {});
   }, []);
+
+  const handleDeleteBook = async (e: React.MouseEvent, book: NodeItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Delete "${book.title}" from library?`)) {
+      try {
+        const res = await fetch(`/api/nodes/${book.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          setBooks(prev => prev.filter(b => b.id !== book.id));
+          if (selectedBook?.id === book.id) {
+            setSelectedBook(null);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to delete book:', err);
+      }
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -133,8 +151,41 @@ export default function LibraryPage() {
                   </div>
 
                   <div className={styles.bookCover}>
-                    <div className={styles.bookTag}>
-                      {book.tags[0] ? `#${book.tags[0]}` : 'CANON'}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <div className={styles.bookTag}>
+                        {book.tags[0] ? `#${book.tags[0]}` : 'CANON'}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteBook(e, book)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '4px',
+                          background: 'rgba(239, 68, 68, 0.08)',
+                          border: '1px solid rgba(239, 68, 68, 0.22)',
+                          color: '#f87171',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+                          e.currentTarget.style.borderColor = '#ef4444';
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                          e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.22)';
+                          e.currentTarget.style.color = '#f87171';
+                        }}
+                        title={`Delete "${book.title}"`}
+                        aria-label={`Delete "${book.title}"`}
+                      >
+                        <Trash2 size={12} />
+                      </button>
                     </div>
 
                     <div className={styles.bookTitle}>{book.title}</div>
@@ -173,9 +224,31 @@ export default function LibraryPage() {
                   {selectedBook.title}
                 </h2>
               </div>
-              <button onClick={() => setSelectedBook(null)} className={styles.closeBtn}>
-                <X size={18} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={(e) => handleDeleteBook(e, selectedBook)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '6px',
+                    background: 'rgba(239, 68, 68, 0.08)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                    color: '#f87171',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title={`Delete "${selectedBook.title}" from library`}
+                >
+                  <Trash2 size={15} />
+                </button>
+                <button onClick={() => setSelectedBook(null)} className={styles.closeBtn}>
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: '16px 0' }}>
@@ -201,7 +274,7 @@ export default function LibraryPage() {
               </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', flexWrap: 'wrap', gap: '10px' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
                 {selectedBook.tags.map(t => (
                   <span key={t} style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
@@ -210,24 +283,50 @@ export default function LibraryPage() {
                 ))}
               </div>
 
-              <Link
-                href={`/node/${selectedBook.slug || selectedBook.id}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  background: 'var(--accent-gold)',
-                  color: 'var(--bg-abyss)',
-                  padding: '9px 18px',
-                  borderRadius: 'var(--radius-sm)',
-                  fontWeight: 600,
-                  fontSize: '0.86rem',
-                  textDecoration: 'none'
-                }}
-              >
-                <BookMarked size={15} />
-                <span>Open Full Node & Connections</span>
-              </Link>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={(e) => handleDeleteBook(e, selectedBook)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: 'rgba(239, 68, 68, 0.08)',
+                    border: '1px solid rgba(239, 68, 68, 0.28)',
+                    color: '#f87171',
+                    padding: '9px 16px',
+                    borderRadius: 'var(--radius-sm)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title={`Delete "${selectedBook.title}"`}
+                >
+                  <Trash2 size={14} />
+                  <span>Delete Book</span>
+                </button>
+
+                <Link
+                  href={`/node/${selectedBook.slug || selectedBook.id}`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: 'var(--accent-gold)',
+                    color: 'var(--bg-abyss)',
+                    padding: '9px 18px',
+                    borderRadius: 'var(--radius-sm)',
+                    fontWeight: 600,
+                    fontSize: '0.86rem',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <BookMarked size={15} />
+                  <span>Open Full Node & Connections</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

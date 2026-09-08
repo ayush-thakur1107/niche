@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Milestone, CheckCircle2, Circle, ArrowRight, Plus } from 'lucide-react';
+import { Milestone, CheckCircle2, Circle, ArrowRight, Plus, Trash2 } from 'lucide-react';
 import { CreateNodeModal } from '@/components/common/CreateNodeModal';
 import { NodeItem } from '@/lib/types';
 import styles from '../page.module.css';
@@ -27,6 +27,38 @@ export default function RoadmapsPage() {
   const [skillNodes, setSkillNodes] = useState<NodeItem[]>([]);
   const [roadmapsList, setRoadmapsList] = useState<RoadmapItem[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const handleDeleteRoadmap = async (e: React.MouseEvent, rmId: string, title: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Delete roadmap "${title}"?`)) {
+      const updated = roadmapsList.filter(r => r.id !== rmId);
+      setRoadmapsList(updated);
+      try {
+        localStorage.setItem('niche:roadmaps:v2', JSON.stringify(updated));
+        await fetch(`/api/nodes/${rmId}`, { method: 'DELETE' }).catch(() => {});
+        setSkillNodes(prev => prev.filter(s => s.id !== rmId));
+      } catch (err) {
+        console.error('Failed to delete roadmap:', err);
+      }
+    }
+  };
+
+  const handleDeleteSkillNode = async (e: React.MouseEvent, node: NodeItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Delete "${node.title}" from mastery skills?`)) {
+      try {
+        await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
+        setSkillNodes(prev => prev.filter(s => s.id !== node.id));
+        const updatedRoadmaps = roadmapsList.filter(r => r.id !== node.id);
+        setRoadmapsList(updatedRoadmaps);
+        localStorage.setItem('niche:roadmaps:v2', JSON.stringify(updatedRoadmaps));
+      } catch (err) {
+        console.error('Failed to delete skill node:', err);
+      }
+    }
+  };
 
   // Load persisted milestones from localStorage
   useEffect(() => {
@@ -149,13 +181,46 @@ export default function RoadmapsPage() {
                   </p>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.15rem', color: isComplete ? 'var(--accent-sage)' : 'var(--accent-gold)', fontWeight: 650 }}>
-                    {progressPercent}%
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {completed} of {total} Done
-                  </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.15rem', color: isComplete ? 'var(--accent-sage)' : 'var(--accent-gold)', fontWeight: 650 }}>
+                      {progressPercent}%
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {completed} of {total} Done
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteRoadmap(e, rm.id, rm.title)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '30px',
+                      height: '30px',
+                      borderRadius: '6px',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: '#f87171',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.22)';
+                      e.currentTarget.style.borderColor = '#ef4444';
+                      e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                      e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+                      e.currentTarget.style.color = '#f87171';
+                    }}
+                    title={`Delete roadmap "${rm.title}"`}
+                    aria-label={`Delete roadmap "${rm.title}"`}
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
               </div>
 
@@ -291,9 +356,42 @@ export default function RoadmapsPage() {
                     <span style={{ fontSize: '0.7rem', color: 'var(--accent-gold)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
                       {node.type}
                     </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                      Level {node.learningState} / 7
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        Level {node.learningState} / 7
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteSkillNode(e, node)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '4px',
+                          background: 'rgba(239, 68, 68, 0.08)',
+                          border: '1px solid rgba(239, 68, 68, 0.22)',
+                          color: '#f87171',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+                          e.currentTarget.style.borderColor = '#ef4444';
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                          e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.22)';
+                          e.currentTarget.style.color = '#f87171';
+                        }}
+                        title={`Delete "${node.title}"`}
+                        aria-label={`Delete "${node.title}"`}
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
                   </div>
                   <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#fff', margin: '6px 0' }}>
                     {node.title}

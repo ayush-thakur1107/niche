@@ -145,7 +145,11 @@ export default function VocabularyPage() {
         ) : (
           <div className={styles.nodesGrid}>
             {vocabNodes.map(node => (
-              <NodeCard key={node.id} node={node} />
+              <NodeCard
+                key={node.id}
+                node={node}
+                onDelete={(deletedId) => setVocabNodes(prev => prev.filter(n => n.id !== deletedId))}
+              />
             ))}
           </div>
         )}

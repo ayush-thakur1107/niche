@@ -77,6 +77,17 @@ export function InspectorDrawer({
     }
   };
 
+  const handleDelete = async () => {
+    if (confirm(`Delete "${node.title}" from universe?`)) {
+      if (onDeleteNode) {
+        onDeleteNode(node.id);
+      } else {
+        await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
+      }
+      onClose();
+    }
+  };
+
   return (
     <div className={styles.drawer}>
       <div className={styles.header}>
@@ -121,20 +132,23 @@ export function InspectorDrawer({
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <button
             onClick={() => setIsEditing(!isEditing)}
-            style={{
-              color: isEditing ? 'var(--accent-gold)' : 'var(--text-muted)',
-              padding: '4px',
-              cursor: 'pointer'
-            }}
+            className={styles.headerActionBtn}
             title={isEditing ? 'Cancel Edit' : 'Edit Node'}
           >
-            <Edit3 size={16} />
+            <Edit3 size={15} />
           </button>
-          <button onClick={onClose} style={{ color: 'var(--text-muted)', padding: '4px' }}>
-            <X size={18} />
+          <button
+            onClick={handleDelete}
+            className={styles.headerDeleteBtn}
+            title={`Delete "${node.title}"`}
+          >
+            <Trash2 size={15} />
+          </button>
+          <button onClick={onClose} className={styles.headerActionBtn} title="Close Inspector">
+            <X size={17} />
           </button>
         </div>
       </div>
@@ -299,20 +313,14 @@ export function InspectorDrawer({
           <span>Open Full Node Page</span>
         </Link>
 
-        {onDeleteNode && (
-          <button
-            className={styles.deleteBtn}
-            onClick={() => {
-              if (confirm(`Delete "${node.title}" from universe?`)) {
-                onDeleteNode(node.id);
-                onClose();
-              }
-            }}
-            title="Delete Node"
-          >
-            <Trash2 size={16} />
-          </button>
-        )}
+        <button
+          className={styles.deleteBtn}
+          onClick={handleDelete}
+          title={`Delete "${node.title}" from universe`}
+        >
+          <Trash2 size={14} />
+          <span>Delete</span>
+        </button>
       </div>
     </div>
   );

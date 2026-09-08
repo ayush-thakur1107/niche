@@ -99,51 +99,7 @@ export function PersistentMusicPlayer() {
   if (!currentTrack) return null;
 
   if (isDismissed) {
-    return (
-      <button
-        onClick={() => {
-          setIsDismissed(false);
-          try {
-            localStorage.setItem('niche:player_dismissed', 'false');
-          } catch (e) {}
-        }}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '24px',
-          zIndex: 45,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 14px',
-          borderRadius: '30px',
-          background: 'rgba(18, 18, 24, 0.92)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(226, 168, 87, 0.35)',
-          color: '#f0f0f5',
-          fontFamily: 'var(--font-mono, monospace)',
-          fontSize: '0.74rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(29, 185, 84, 0.18)',
-          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = '#1ed760';
-          e.currentTarget.style.transform = 'translateY(-2px)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(226, 168, 87, 0.35)';
-          e.currentTarget.style.transform = 'translateY(0)';
-        }}
-        title="Open Spotify & Music Player"
-      >
-        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: isPlaying ? '#1ed760' : '#8e8e9c', boxShadow: isPlaying ? '0 0 8px #1ed760' : 'none' }} />
-        <Music2 size={14} color="#1ed760" />
-        <span style={{ letterSpacing: '0.04em' }}>SPOTIFY</span>
-        <ChevronUp size={13} color="#8e8e9c" />
-      </button>
-    );
+    return null;
   }
 
   return (

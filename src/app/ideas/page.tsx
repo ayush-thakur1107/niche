@@ -225,7 +225,11 @@ export default function IdeasPage() {
         ) : (
           <div className={styles.nodesGrid}>
             {ideas.map(idea => (
-              <NodeCard key={idea.id} node={idea} />
+              <NodeCard
+                key={idea.id}
+                node={idea}
+                onDelete={(deletedId) => setIdeas(prev => prev.filter(i => i.id !== deletedId))}
+              />
             ))}
           </div>
         )}

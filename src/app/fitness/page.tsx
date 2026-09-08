@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Dumbbell, TrendingUp, Trophy, Plus } from 'lucide-react';
+import { Dumbbell, TrendingUp, Trophy, Plus, Trash2 } from 'lucide-react';
 import { CreateNodeModal } from '@/components/common/CreateNodeModal';
 import { NodeItem } from '@/lib/types';
 import styles from '../page.module.css';
@@ -24,6 +24,21 @@ export default function FitnessPage() {
       })
       .catch(() => {});
   }, []);
+
+  const handleDeleteExercise = async (e: React.MouseEvent, ex: NodeItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Delete "${ex.title}" from physical records?`)) {
+      try {
+        const res = await fetch(`/api/nodes/${ex.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          setCustomExercises(prev => prev.filter(item => item.id !== ex.id));
+        }
+      } catch (err) {
+        console.error('Failed to delete exercise:', err);
+      }
+    }
+  };
 
   const exercises: Array<{
     name: string;
@@ -209,9 +224,42 @@ export default function FitnessPage() {
                     <span style={{ fontSize: '0.7rem', color: 'var(--accent-sage)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
                       PHYSICAL CAPACITY
                     </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                      Level {ex.learningState} / 7
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        Level {ex.learningState} / 7
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteExercise(e, ex)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '4px',
+                          background: 'rgba(239, 68, 68, 0.08)',
+                          border: '1px solid rgba(239, 68, 68, 0.22)',
+                          color: '#f87171',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+                          e.currentTarget.style.borderColor = '#ef4444';
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                          e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.22)';
+                          e.currentTarget.style.color = '#f87171';
+                        }}
+                        title={`Delete "${ex.title}"`}
+                        aria-label={`Delete "${ex.title}"`}
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
                   </div>
                   <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#fff', margin: '6px 0' }}>
                     {ex.title}

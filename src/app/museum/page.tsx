@@ -18,7 +18,8 @@ import {
   Code2,
   FlaskConical,
   Flame,
-  Tag
+  Tag,
+  Trash2
 } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { TextScramble } from '@/interaction/text/TextScramble';
@@ -50,6 +51,17 @@ export default function MuseumPage() {
   const [activeSpecimen, setActiveSpecimen] = useState<MuseumSpecimen | null>(null);
 
   const { setCursor, resetCursor } = useInteractionStore();
+
+  const handleDeleteSpecimen = (e: React.MouseEvent, specimenId: string, title: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Remove specimen "${title}" from museum archive?`)) {
+      setSpecimens(prev => prev.filter(s => s.id !== specimenId));
+      if (activeSpecimen?.id === specimenId) {
+        setActiveSpecimen(null);
+      }
+    }
+  };
 
   const filtered = specimens.filter((s) => {
     if (selectedStatus !== 'ALL' && s.status !== selectedStatus) return false;
@@ -349,23 +361,57 @@ export default function MuseumPage() {
                   {specimen.accessionNo}
                 </span>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '3px 8px',
-                    borderRadius: '6px',
-                    background: badge.bg,
-                    border: `1px solid ${badge.border}`,
-                    color: badge.color,
-                    fontSize: '0.68rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.06em'
-                  }}
-                >
-                  <BadgeIcon size={12} />
-                  <span>{badge.label}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      background: badge.bg,
+                      border: `1px solid ${badge.border}`,
+                      color: badge.color,
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em'
+                    }}
+                  >
+                    <BadgeIcon size={12} />
+                    <span>{badge.label}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteSpecimen(e, specimen.id, specimen.title)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '5px',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: '#f87171',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+                      e.currentTarget.style.borderColor = '#ef4444';
+                      e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                      e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+                      e.currentTarget.style.color = '#f87171';
+                    }}
+                    title={`Delete specimen "${specimen.title}"`}
+                    aria-label={`Delete specimen "${specimen.title}"`}
+                  >
+                    <Trash2 size={12} />
+                  </button>
                 </div>
               </div>
 
@@ -530,20 +576,42 @@ export default function MuseumPage() {
                 >
                   {activeSpecimen.accessionNo} · {activeSpecimen.category}
                 </span>
-                <button
-                  onClick={() => setActiveSpecimen(null)}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '32px',
-                    height: '32px',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ✕
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteSpecimen(e, activeSpecimen.id, activeSpecimen.title)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.28)',
+                      color: '#f87171',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    title={`Delete specimen "${activeSpecimen.title}"`}
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                  <button
+                    onClick={() => setActiveSpecimen(null)}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      color: '#fff',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
 
               <h2
