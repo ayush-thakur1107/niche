@@ -20,9 +20,35 @@ export default async function HomePage() {
   const connections = getAllConnections();
   const stats = getUniverseStats();
 
-  // Highlighted specimen for "From the Archive" (default to Albert Camus if present, or random node)
+  // Highlighted specimen for "From the Archive"
   const camusNode = nodes.find(n => n.title.toLowerCase().includes('camus')) || null;
   const spotlightNode = camusNode || (nodes.length > 0 ? nodes[Math.floor(Math.random() * nodes.length)] : null);
+
+  // Dynamic focus items derived from real nodes
+  const readingNode = nodes.find(n => n.type === 'BOOK' || n.tags.includes('reading') || n.tags.includes('book'));
+  const learningNode = nodes.find(n => n.learningState >= 1 && n.learningState <= 4 && n !== readingNode);
+  const buildingNode = nodes.find(n => n.type === 'PROJECT' || n.tags.includes('building') || n.tags.includes('project'));
+  const trainingNode = nodes.find(n => n.type === 'SPORT' || n.tags.includes('fitness') || n.tags.includes('training'));
+  const thinkingNode = nodes.find(n => n.type === 'PHILOSOPHY' || n.type === 'IDEA' || n.type === 'THEORY' || n.tags.includes('philosophy'));
+  const craftNode = nodes.find(n => n.type === 'CRAFT' || n.type === 'ARCHITECTURE' || n.tags.includes('craft'));
+
+  const candidateItems = [
+    readingNode && { category: 'Reading', title: readingNode.title, desc: readingNode.summary || readingNode.type, href: `/node/${readingNode.slug || readingNode.id}` },
+    learningNode && { category: 'Learning', title: learningNode.title, desc: learningNode.summary || `Level ${learningNode.learningState}`, href: `/node/${learningNode.slug || learningNode.id}` },
+    buildingNode && { category: 'Building', title: buildingNode.title, desc: buildingNode.summary || buildingNode.type, href: `/node/${buildingNode.slug || buildingNode.id}` },
+    trainingNode && { category: 'Training', title: trainingNode.title, desc: trainingNode.summary || trainingNode.type, href: `/node/${trainingNode.slug || trainingNode.id}` },
+    thinkingNode && { category: 'Thinking', title: thinkingNode.title, desc: thinkingNode.summary || thinkingNode.type, href: `/node/${thinkingNode.slug || thinkingNode.id}` },
+    craftNode && { category: 'Subtle Craft', title: craftNode.title, desc: craftNode.summary || craftNode.type, href: `/node/${craftNode.slug || craftNode.id}` },
+  ].filter(Boolean) as { category: string; title: string; desc: string; href: string }[];
+
+  const focusItems = candidateItems.length > 0
+    ? candidateItems
+    : nodes.slice(0, 6).map((n) => ({
+        category: n.type || 'Focus',
+        title: n.title,
+        desc: n.summary || `Level ${n.learningState || 1}`,
+        href: `/node/${n.slug || n.id}`
+      }));
 
   return (
     <div className={styles.container}>
@@ -45,7 +71,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. Currently in Focus (Containerless Index Entries) */}
+      {/* 2. Currently in Focus (Dynamic from nodes) */}
       <section>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitle}>
@@ -54,43 +80,37 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className={styles.currentlyGrid}>
-          <div className={styles.currentlyCard}>
-            <span className={styles.currentlyLabel}>Reading</span>
-            <div className={styles.currentlyValue}>The Stranger</div>
-            <div className={styles.currentlyDesc}>Camus · French Absurdist Novella</div>
+        {focusItems.length > 0 ? (
+          <div className={styles.currentlyGrid}>
+            {focusItems.map((item, idx) => (
+              <Link
+                key={idx}
+                href={item.href}
+                className={styles.currentlyCard}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <span className={styles.currentlyLabel}>{item.category}</span>
+                <div className={styles.currentlyValue}>{item.title}</div>
+                <div className={styles.currentlyDesc}>{item.desc}</div>
+              </Link>
+            ))}
           </div>
-
-          <div className={styles.currentlyCard}>
-            <span className={styles.currentlyLabel}>Learning</span>
-            <div className={styles.currentlyValue}>Chola Naval Thalassocracy</div>
-            <div className={styles.currentlyDesc}>Indian Ocean monsoon trade routes</div>
+        ) : (
+          <div
+            style={{
+              padding: '36px 24px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: 'rgba(14, 15, 22, 0.4)',
+              textAlign: 'center',
+              color: '#8e8e9c',
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '0.8rem'
+            }}
+          >
+            <div style={{ color: 'var(--accent-gold)', marginBottom: '6px' }}>// NO ACTIVE NODES IN FOCUS</div>
+            <div>Your universe is cleared. Add entities on the Atlas canvas to track active focus streams.</div>
           </div>
-
-          <div className={styles.currentlyCard}>
-            <span className={styles.currentlyLabel}>Building</span>
-            <div className={styles.currentlyValue}>Niche Maxing System</div>
-            <div className={styles.currentlyDesc}>Personal digital life universe</div>
-          </div>
-
-          <div className={styles.currentlyCard}>
-            <span className={styles.currentlyLabel}>Training</span>
-            <div className={styles.currentlyValue}>Hammer Curls & Muay Thai</div>
-            <div className={styles.currentlyDesc}>17.5 kg strict sets · Teep & elbows</div>
-          </div>
-
-          <div className={styles.currentlyCard}>
-            <span className={styles.currentlyLabel}>Thinking</span>
-            <div className={styles.currentlyValue}>The Myth of Sisyphus</div>
-            <div className={styles.currentlyDesc}>Defiance in an indifferent cosmos</div>
-          </div>
-
-          <div className={styles.currentlyCard}>
-            <span className={styles.currentlyLabel}>Subtle Craft</span>
-            <div className={styles.currentlyValue}>Bespoke Tailoring</div>
-            <div className={styles.currentlyDesc}>Floating canvas chest balance</div>
-          </div>
-        </div>
+        )}
       </section>
 
       {/* 3. From The Archive / Live Signal Interruption */}
