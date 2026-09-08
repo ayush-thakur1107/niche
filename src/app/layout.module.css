@@ -2,6 +2,8 @@
   display: flex;
   min-height: 100vh;
   background: var(--bg-abyss);
+  position: relative;
+  z-index: 1;
 }
 
 .mainContent {
@@ -9,8 +11,10 @@
   flex: 1;
   min-height: 100vh;
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
+  pointer-events: auto;
 }
 
 @media (max-width: 900px) {

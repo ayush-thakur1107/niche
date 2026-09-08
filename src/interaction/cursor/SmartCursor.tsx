@@ -37,10 +37,10 @@ export function SmartCursor() {
     };
   }, [mouseX, mouseY, isVisible]);
 
-  if (cursorMode === 'HIDDEN' || !isVisible) return null;
-
   const isSpecial = cursorMode !== 'DEFAULT';
   const label = cursorText || cursorMode;
+
+  if (cursorMode === 'HIDDEN' || !isVisible || !isSpecial) return null;
 
   return (
     <motion.div

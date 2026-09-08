@@ -37,16 +37,15 @@ html.lenis body {
   min-height: 100vh;
 }
 
-/* Custom Cursor: Hide default browser cursor on desktop fine-pointer devices */
-@media (pointer: fine) {
-  html, body, a, button, [role="button"], select, div, span, p, h1, h2, h3, h4, h5, h6, section, aside, main, header, footer {
-    cursor: none !important;
-  }
+/* Interactive Elements: Standard Native Cursors & Pointer Events */
+button, a, [role="button"], input[type="submit"], input[type="button"], select {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
 
-  /* Keep natural text cursor inside inputs and textareas */
-  input, textarea {
-    cursor: text !important;
-  }
+input, textarea {
+  cursor: text !important;
+  pointer-events: auto !important;
 }
 
 /* Subtle procedural archive film grain texture overlay (~3.5% opacity) */
@@ -58,8 +57,8 @@ body::before {
   height: 100vh;
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 99990;
+  pointer-events: none !important;
+  z-index: -1;
 }
 
 /* Faint radial vignette darkening toward the edges of viewport */
@@ -70,8 +69,8 @@ body::after {
   width: 100vw;
   height: 100vh;
   background: radial-gradient(ellipse at 50% 35%, transparent 55%, rgba(4, 5, 8, 0.65) 100%);
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none !important;
+  z-index: -1;
 }
 
 /* Scrollbars */

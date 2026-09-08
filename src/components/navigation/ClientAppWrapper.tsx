@@ -58,17 +58,15 @@ export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
       gsap.fromTo(
         mainRef.current,
         {
-          opacity: 0.35,
-          scale: 0.992,
+          opacity: 0.5,
           filter: 'blur(2px)'
         },
         {
           opacity: 1,
-          scale: 1,
           filter: 'blur(0px)',
-          duration: 0.35,
+          duration: 0.25,
           ease: 'power2.out',
-          clearProps: 'transform,filter,opacity'
+          clearProps: 'all'
         }
       );
     },
