@@ -64,6 +64,36 @@
   font-weight: 600;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.addMovieBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #e2a857 0%, #c48b3c 100%);
+  color: #08080a;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.addMovieBtn:hover {
+  background: #ecc07e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(226, 168, 87, 0.35);
+}
+
 /* Hero Feature */
 .heroFeature {
   position: relative;

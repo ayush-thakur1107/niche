@@ -164,6 +164,8 @@ export interface TimelineEvent {
   entityId: string;
   title: string;
   description: string;
+  date?: string;
+  tags?: string[];
   createdAt: string;
 }
 

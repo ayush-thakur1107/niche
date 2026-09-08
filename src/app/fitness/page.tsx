@@ -1,8 +1,30 @@
-import React from 'react';
-import { Dumbbell, TrendingUp, Trophy } from 'lucide-react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Dumbbell, TrendingUp, Trophy, Plus } from 'lucide-react';
+import { CreateNodeModal } from '@/components/common/CreateNodeModal';
+import { NodeItem } from '@/lib/types';
 import styles from '../page.module.css';
 
 export default function FitnessPage() {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [customExercises, setCustomExercises] = useState<NodeItem[]>([]);
+
+  useEffect(() => {
+    fetch('/api/nodes')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const fit = data.filter(
+            n => n.tags.includes('fitness') || n.tags.includes('exercise') || n.tags.includes('training') || n.type === 'SPORT'
+          );
+          setCustomExercises(fit);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const exercises = [
     {
       name: 'Hammer Curls (Strict)',
@@ -29,7 +51,7 @@ export default function FitnessPage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.hero}>
+      <header className={styles.hero} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <Dumbbell size={18} color="var(--accent-gold)" />
@@ -40,6 +62,30 @@ export default function FitnessPage() {
             “What am I capable of now compared with myself before?”
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+            color: '#08080a',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.76rem',
+            fontWeight: 650,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            cursor: 'pointer'
+          }}
+        >
+          <Plus size={14} />
+          <span>Log Exercise</span>
+        </button>
       </header>
 
       {/* Philosophical premise callout */}
@@ -110,8 +156,58 @@ export default function FitnessPage() {
               </p>
             </div>
           ))}
+
+          {customExercises.length > 0 && (
+            <div style={{ marginTop: '20px' }}>
+              <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px' }}>
+                Custom Physical Records & Workouts ({customExercises.length})
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                {customExercises.map(ex => (
+                  <Link
+                    key={ex.id}
+                    href={`/node/${ex.slug || ex.id}`}
+                    style={{
+                      display: 'block',
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '18px 20px',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--accent-sage)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+                        PHYSICAL CAPACITY
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        Level {ex.learningState} / 7
+                      </span>
+                    </div>
+                    <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#fff', margin: '6px 0' }}>
+                      {ex.title}
+                    </h4>
+                    <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                      {ex.summary}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Add Exercise Modal */}
+      <CreateNodeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        defaultType="SPORT"
+        defaultTags={['fitness', 'exercise', 'training']}
+        onNodeCreated={(newEx) => {
+          setCustomExercises(prev => [newEx, ...prev]);
+        }}
+      />
     </div>
   );
 }

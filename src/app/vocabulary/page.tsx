@@ -1,13 +1,30 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookA, Sparkles, ArrowRight } from 'lucide-react';
-import { getAllNodes } from '@/lib/storage';
+import { BookA, Sparkles, ArrowRight, Plus } from 'lucide-react';
 import { NodeCard } from '@/components/cards/NodeCard';
+import { CreateNodeModal } from '@/components/common/CreateNodeModal';
+import { NodeItem } from '@/lib/types';
 import styles from '../page.module.css';
 
 export default function VocabularyPage() {
-  const allNodes = getAllNodes();
-  const vocabNodes = allNodes.filter(n => n.type === 'WORD' || n.tags.includes('vocabulary') || n.tags.includes('word'));
+  const [vocabNodes, setVocabNodes] = useState<NodeItem[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/nodes')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const words = data.filter(
+            n => n.type === 'WORD' || n.tags.includes('vocabulary') || n.tags.includes('word')
+          );
+          setVocabNodes(words);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const dailyWord = {
     word: 'Palimpsest',
@@ -20,7 +37,7 @@ export default function VocabularyPage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.hero}>
+      <header className={styles.hero} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <BookA size={18} color="var(--accent-gold)" />
@@ -31,6 +48,30 @@ export default function VocabularyPage() {
             “Words I have adopted into my mind, not for academic display, but for precision of thought.”
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+            color: '#08080a',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.76rem',
+            fontWeight: 650,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            cursor: 'pointer'
+          }}
+        >
+          <Plus size={14} />
+          <span>Add Word</span>
+        </button>
       </header>
 
       {/* Featured Word of the Day */}
@@ -70,13 +111,65 @@ export default function VocabularyPage() {
 
       {/* Adopted Words List */}
       <section>
-        <div className={styles.sectionTitle}>Adopted Words in Universe</div>
-        <div className={styles.nodesGrid}>
-          {vocabNodes.map(node => (
-            <NodeCard key={node.id} node={node} />
-          ))}
-        </div>
+        <div className={styles.sectionTitle}>Adopted Words in Universe ({vocabNodes.length})</div>
+        {vocabNodes.length === 0 ? (
+          <div
+            style={{
+              padding: '40px 24px',
+              textAlign: 'center',
+              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255, 255, 255, 0.015)'
+            }}
+          >
+            <BookA size={24} color="var(--accent-gold)" style={{ margin: '0 auto 8px auto' }} />
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#fff', marginBottom: '4px' }}>
+              No custom lexicon words adopted yet
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.84rem', maxWidth: '380px', margin: '0 auto 16px auto' }}>
+              Adopt words into your personal lexicon that grant greater precision to your thinking.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 14px',
+                background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+                color: '#08080a',
+                border: 'none',
+                borderRadius: 'var(--radius-sm)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.76rem',
+                fontWeight: 650,
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={14} />
+              <span>Add Your First Word</span>
+            </button>
+          </div>
+        ) : (
+          <div className={styles.nodesGrid}>
+            {vocabNodes.map(node => (
+              <NodeCard key={node.id} node={node} />
+            ))}
+          </div>
+        )}
       </section>
+
+      {/* Add Word Modal */}
+      <CreateNodeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        defaultType="WORD"
+        defaultTags={['vocabulary', 'word', 'lexicon']}
+        onNodeCreated={(newWord) => {
+          setVocabNodes(prev => [newWord, ...prev]);
+        }}
+      />
     </div>
   );
 }

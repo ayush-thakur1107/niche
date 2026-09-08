@@ -9,6 +9,9 @@ import styles from '../navigation/CommandPalette.module.css';
 interface CreateNodeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultType?: NodeType;
+  defaultTags?: string[];
+  titlePrompt?: string;
   onNodeCreated?: (node: any) => void;
 }
 
@@ -36,14 +39,22 @@ const NODE_TYPES: NodeType[] = [
   'CUSTOM'
 ];
 
-export function CreateNodeModal({ isOpen, onClose, onNodeCreated }: CreateNodeModalProps) {
+export function CreateNodeModal({
+  isOpen,
+  onClose,
+  defaultType = 'CONCEPT',
+  defaultTags = [],
+  titlePrompt,
+  onNodeCreated
+}: CreateNodeModalProps) {
   const router = useRouter();
   const [title, setTitle] = useState('');
-  const [type, setType] = useState<NodeType>('CONCEPT');
+  const [type, setType] = useState<NodeType>(defaultType);
   const [summary, setSummary] = useState('');
   const [whyCare, setWhyCare] = useState('');
+  const [coverImage, setCoverImage] = useState('');
   const [learningState, setLearningState] = useState<LearningState>(2);
-  const [tagsInput, setTagsInput] = useState('');
+  const [tagsInput, setTagsInput] = useState(defaultTags.join(', '));
   const [fetchWikipedia, setFetchWikipedia] = useState(true);
   const [loading, setLoading] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -51,12 +62,14 @@ export function CreateNodeModal({ isOpen, onClose, onNodeCreated }: CreateNodeMo
   useEffect(() => {
     if (isOpen) {
       setTitle('');
+      setType(defaultType);
       setSummary('');
       setWhyCare('');
-      setTagsInput('');
+      setCoverImage('');
+      setTagsInput(defaultTags.join(', '));
       setTimeout(() => titleInputRef.current?.focus(), 50);
     }
-  }, [isOpen]);
+  }, [isOpen, defaultType, defaultTags]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +90,7 @@ export function CreateNodeModal({ isOpen, onClose, onNodeCreated }: CreateNodeMo
           title: title.trim(),
           type,
           summary: summary.trim(),
+          coverImage: coverImage.trim(),
           whyCare: whyCare.trim(),
           learningState: Number(learningState),
           tags

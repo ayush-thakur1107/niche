@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Lightbulb, History, Sparkles, ArrowRight, GitCommit, Split } from 'lucide-react';
+import { Lightbulb, History, Sparkles, ArrowRight, GitCommit, Split, Plus } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
+import { CreateNodeModal } from '@/components/common/CreateNodeModal';
 import { NodeItem } from '@/lib/types';
 import { NodeCard } from '@/components/cards/NodeCard';
 import styles from '../page.module.css';
@@ -49,6 +50,7 @@ export default function IdeasPage() {
   const { setCursor, resetCursor } = useInteractionStore();
   const [ideas, setIdeas] = useState<NodeItem[]>([]);
   const [selectedEvolution, setSelectedEvolution] = useState<number>(0);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/nodes')
@@ -68,7 +70,7 @@ export default function IdeasPage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.hero}>
+      <header className={styles.hero} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <Lightbulb size={18} color="var(--accent-gold)" />
@@ -79,6 +81,30 @@ export default function IdeasPage() {
             “What I believe, what I question, and what I have changed my mind about across time.”
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+            color: '#08080a',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.76rem',
+            fontWeight: 650,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            cursor: 'pointer'
+          }}
+        >
+          <Plus size={14} />
+          <span>New Thesis</span>
+        </button>
       </header>
 
       {/* "What I Used to Think" Interactive Evolution Timeline */}
@@ -180,12 +206,64 @@ export default function IdeasPage() {
           <span>Active Philosophical Frameworks & Hypotheses ({ideas.length})</span>
         </div>
 
-        <div className={styles.nodesGrid}>
-          {ideas.map(idea => (
-            <NodeCard key={idea.id} node={idea} />
-          ))}
-        </div>
+        {ideas.length === 0 ? (
+          <div
+            style={{
+              padding: '48px 24px',
+              textAlign: 'center',
+              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255, 255, 255, 0.015)'
+            }}
+          >
+            <Lightbulb size={26} color="var(--accent-gold)" style={{ margin: '0 auto 10px auto' }} />
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', color: '#fff', marginBottom: '6px' }}>
+              No custom theses added yet
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', maxWidth: '420px', margin: '0 auto 18px auto' }}>
+              Record hypotheses, evolving stances, and foundational theses that govern your decisions.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+                color: '#08080a',
+                border: 'none',
+                borderRadius: 'var(--radius-sm)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.76rem',
+                fontWeight: 650,
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={14} />
+              <span>Record First Thesis</span>
+            </button>
+          </div>
+        ) : (
+          <div className={styles.nodesGrid}>
+            {ideas.map(idea => (
+              <NodeCard key={idea.id} node={idea} />
+            ))}
+          </div>
+        )}
       </section>
+
+      {/* Add Thesis Modal */}
+      <CreateNodeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        defaultType="PHILOSOPHY"
+        defaultTags={['philosophy', 'thesis', 'ideas']}
+        onNodeCreated={(newNode) => {
+          setIdeas(prev => [newNode, ...prev]);
+        }}
+      />
     </div>
   );
 }

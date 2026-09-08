@@ -1,9 +1,30 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Milestone, CheckCircle2, Circle, ArrowRight } from 'lucide-react';
+import { Milestone, CheckCircle2, Circle, ArrowRight, Plus } from 'lucide-react';
+import { CreateNodeModal } from '@/components/common/CreateNodeModal';
+import { NodeItem } from '@/lib/types';
 import styles from '../page.module.css';
 
 export default function RoadmapsPage() {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [skillNodes, setSkillNodes] = useState<NodeItem[]>([]);
+
+  useEffect(() => {
+    fetch('/api/nodes')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const skills = data.filter(
+            n => n.type === 'SKILL' || n.type === 'PROJECT' || n.tags.includes('roadmap') || n.tags.includes('skill')
+          );
+          setSkillNodes(skills);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const roadmaps = [
     {
       id: 'rm-1',
@@ -44,7 +65,7 @@ export default function RoadmapsPage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.hero}>
+      <header className={styles.hero} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <Milestone size={18} color="var(--accent-gold)" />
@@ -55,6 +76,30 @@ export default function RoadmapsPage() {
             “Not a task checklist. A visual trajectory of personal transformation.”
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+            color: '#08080a',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.76rem',
+            fontWeight: 650,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            cursor: 'pointer'
+          }}
+        >
+          <Plus size={14} />
+          <span>New Roadmap</span>
+        </button>
       </header>
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -115,7 +160,57 @@ export default function RoadmapsPage() {
             </div>
           </div>
         ))}
+
+        {skillNodes.length > 0 && (
+          <div style={{ marginTop: '16px' }}>
+            <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px' }}>
+              Custom Tracked Skills & Mastery Trajectories ({skillNodes.length})
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '14px' }}>
+              {skillNodes.map(node => (
+                <Link
+                  key={node.id}
+                  href={`/node/${node.slug || node.id}`}
+                  style={{
+                    display: 'block',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '18px 20px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--accent-gold)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+                      {node.type}
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                      Level {node.learningState} / 7
+                    </span>
+                  </div>
+                  <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#fff', margin: '6px 0' }}>
+                    {node.title}
+                  </h4>
+                  <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                    {node.summary}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
+
+      {/* Add Roadmap / Skill Modal */}
+      <CreateNodeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        defaultType="SKILL"
+        defaultTags={['roadmap', 'skill', 'mastery']}
+        onNodeCreated={(newNode) => {
+          setSkillNodes(prev => [newNode, ...prev]);
+        }}
+      />
     </div>
   );
 }

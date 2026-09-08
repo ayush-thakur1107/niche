@@ -405,11 +405,37 @@ export function deleteInboxItem(id: string): boolean {
   return true;
 }
 
-// === TIMELINE EVENTS ===
-
 export function getTimelineEvents(): TimelineEvent[] {
   const db = readDatabase();
   return db.events;
+}
+
+export function addTimelineEvent(event: {
+  title: string;
+  date: string;
+  description: string;
+  entityType?: 'NODE' | 'EXTERNAL';
+  entityId?: string;
+  tags?: string[];
+}): TimelineEvent {
+  const db = readDatabase();
+  const newEvent: TimelineEvent = {
+    id: `ev-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    eventType: 'MILESTONE',
+    title: event.title,
+    date: event.date,
+    description: event.description,
+    entityType: event.entityType || 'EXTERNAL',
+    entityId: event.entityId || '',
+    tags: event.tags || [],
+    createdAt: new Date().toISOString()
+  };
+  if (!Array.isArray(db.events)) {
+    db.events = [];
+  }
+  db.events.unshift(newEvent);
+  writeDatabase(db);
+  return newEvent;
 }
 
 // === SEARCH ===

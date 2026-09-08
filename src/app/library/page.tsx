@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, Star, ArrowRight, X, Sparkles, BookMarked } from 'lucide-react';
+import { BookOpen, Star, ArrowRight, X, Sparkles, BookMarked, Plus } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
+import { CreateNodeModal } from '@/components/common/CreateNodeModal';
 import { NodeItem } from '@/lib/types';
 import styles from './library.module.css';
 
@@ -12,6 +13,7 @@ export default function LibraryPage() {
   const { setCursor, resetCursor } = useInteractionStore();
   const [books, setBooks] = useState<NodeItem[]>([]);
   const [selectedBook, setSelectedBook] = useState<NodeItem | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/nodes')
@@ -41,10 +43,33 @@ export default function LibraryPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span className="badge" style={{ color: 'var(--accent-gold)' }}>
             {books.length} Books in Canon
           </span>
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '7px 14px',
+              background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+              color: '#08080a',
+              border: 'none',
+              borderRadius: 'var(--radius-sm)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.76rem',
+              fontWeight: 650,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              cursor: 'pointer'
+            }}
+          >
+            <Plus size={14} />
+            <span>Add Book</span>
+          </button>
         </div>
       </header>
 
@@ -54,71 +79,106 @@ export default function LibraryPage() {
           Physical Shelf Objects · Click Book to Open & Read Marginalia
         </div>
 
-        <div className={styles.bookGrid}>
-          {books.map(book => (
-            <CardTilt key={book.id} maxTilt={10}>
-              <div
-                className={styles.bookObject}
-                onClick={() => setSelectedBook(book)}
-                onMouseEnter={() => setCursor('OPEN')}
-                onMouseLeave={() => resetCursor()}
-              >
-                {book.coverImage && (
-                  <div
-                    className={styles.bookCover}
-                    style={{ backgroundImage: `url(${book.coverImage})` }}
-                  >
-                    <div className={styles.bookCoverOverlay} />
+        {books.length === 0 ? (
+          <div
+            style={{
+              padding: '60px 24px',
+              textAlign: 'center',
+              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255, 255, 255, 0.015)'
+            }}
+          >
+            <BookOpen size={28} color="var(--accent-gold)" style={{ margin: '0 auto 12px auto' }} />
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: '#fff', marginBottom: '8px' }}>
+              No books recorded in your canon yet
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '440px', margin: '0 auto 20px auto' }}>
+              The library is a sanctum for cognitive artifacts that alter your mental models. Log your first foundational text.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 18px',
+                background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+                color: '#08080a',
+                border: 'none',
+                borderRadius: 'var(--radius-sm)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.78rem',
+                fontWeight: 650,
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={15} />
+              <span>Add Your First Book</span>
+            </button>
+          </div>
+        ) : (
+          <div className={styles.bookGrid}>
+            {books.map(book => (
+              <CardTilt key={book.id} maxTilt={10}>
+                <div
+                  className={styles.bookObject}
+                  onClick={() => setSelectedBook(book)}
+                  onMouseEnter={() => setCursor('OPEN')}
+                  onMouseLeave={() => resetCursor()}
+                >
+                  <div className={styles.bookSpine}>
+                    <span className={styles.spineText}>{book.title}</span>
                   </div>
-                )}
 
-                <div>
-                  <h3 className={styles.bookTitle}>{book.title}</h3>
-                  <div className={styles.bookAuthor}>
-                    {book.tags.find(t => t !== 'book' && t !== 'literature') || 'Canon Author'}
-                  </div>
-                  <p className={styles.bookSummary}>{book.summary}</p>
-                  {book.whyCare && (
-                    <div className={styles.bookWhyCare}>
-                      “{book.whyCare}”
+                  <div className={styles.bookCover}>
+                    <div className={styles.bookTag}>
+                      {book.tags[0] ? `#${book.tags[0]}` : 'CANON'}
                     </div>
-                  )}
-                </div>
 
-                <div className={styles.bookFooter}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'capitalize' }}>
-                    {book.uncertaintyLevel ? book.uncertaintyLevel.replace('_', ' ') : 'Canon Text'}
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-gold)', fontSize: '0.76rem', fontWeight: 600 }}>
-                    <span>Open</span>
-                    <ArrowRight size={12} />
+                    <div className={styles.bookTitle}>{book.title}</div>
+                    <div className={styles.bookAuthor}>
+                      {book.uncertaintyLevel ? book.uncertaintyLevel.replace('_', ' ') : 'Author'}
+                    </div>
+
+                    <p className={styles.bookSummary}>
+                      {book.summary}
+                    </p>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid var(--border-faint)' }}>
+                      <span className={styles.statusBadge}>
+                        {book.learningState >= 5 ? 'Mastered' : 'Engaged'}
+                      </span>
+                      <ArrowRight size={13} color="var(--accent-gold)" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardTilt>
-          ))}
-        </div>
+              </CardTilt>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* Book Inspection Modal (The Book Inside) */}
+      {/* Book Reading Drawer / Modal */}
       {selectedBook && (
-        <div className={styles.modalOverlay} onClick={() => setSelectedBook(null)}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+        <div className={styles.drawerOverlay} onClick={() => setSelectedBook(null)}>
+          <div className={styles.drawer} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span className="badge" style={{ color: 'var(--accent-gold)', marginBottom: '8px' }}>
-                  CANON OBJECT
+                <span className="mono-tag" style={{ color: 'var(--accent-gold)', marginBottom: '8px', display: 'inline-block' }}>
+                  CANON SPECIMEN
                 </span>
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', color: 'var(--text-primary)', lineHeight: 1.15 }}>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: 'var(--text-primary)', margin: '4px 0' }}>
                   {selectedBook.title}
                 </h2>
               </div>
-              <button onClick={() => setSelectedBook(null)} style={{ color: 'var(--text-muted)' }}>
-                <X size={20} />
+              <button onClick={() => setSelectedBook(null)} className={styles.closeBtn}>
+                <X size={18} />
               </button>
             </div>
 
-            <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: '16px 0' }}>
               {selectedBook.summary}
             </p>
 
@@ -172,6 +232,17 @@ export default function LibraryPage() {
           </div>
         </div>
       )}
+
+      {/* Add Book Modal */}
+      <CreateNodeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        defaultType="BOOK"
+        defaultTags={['book', 'literature']}
+        onNodeCreated={(newBook) => {
+          setBooks(prev => [newBook, ...prev]);
+        }}
+      />
     </div>
   );
 }
