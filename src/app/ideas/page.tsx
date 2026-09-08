@@ -1,14 +1,69 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Lightbulb, Sparkles, ArrowRight, History } from 'lucide-react';
-import { getAllNodes } from '@/lib/storage';
+import { Lightbulb, History, Sparkles, ArrowRight, GitCommit, Split } from 'lucide-react';
+import { useInteractionStore } from '@/interaction/store';
+import { CardTilt } from '@/interaction/cards/CardTilt';
+import { NodeItem } from '@/lib/types';
 import styles from '../page.module.css';
 
+interface EvolutionExample {
+  topic: string;
+  pastYear: string;
+  pastBelief: string;
+  currentYear: string;
+  currentBelief: string;
+  whyChanged: string;
+}
+
+const EVOLUTIONS: EvolutionExample[] = [
+  {
+    topic: 'Consciousness & Meaning',
+    pastYear: '2023',
+    pastBelief: 'Meaning must be discovered or grounded in objective cosmological laws; without cosmic purpose, action is arbitrary.',
+    currentYear: '2026',
+    currentBelief: 'Meaning is fundamentally an aesthetic and moral act of defiance. One must imagine Sisyphus happy—revolt gives life value.',
+    whyChanged: 'Reading Albert Camus’s The Myth of Sisyphus and studying quantum indeterminacy.'
+  },
+  {
+    topic: 'Productivity vs Curiosity',
+    pastYear: '2024',
+    pastBelief: 'Every project must optimize towards immediate utility, SaaS metrics, or public demonstration to be justified.',
+    currentYear: '2026',
+    currentBelief: 'Curiosity is an autonomous sovereign pursuit. Deep tangential exploration (naval history, bespoke tailoring) compounds in unpredictable creative leaps.',
+    whyChanged: 'Realizing that my most original programming and philosophical insights came from unrelated disciplines.'
+  },
+  {
+    topic: 'Architecture & Form',
+    pastYear: '2022',
+    pastBelief: 'Architecture should maximize ornament, glass lightness, and sleek modern symmetry.',
+    currentYear: '2026',
+    currentBelief: 'Honesty of material takes precedence over cosmetic decoration. Brutalism’s exposed concrete acknowledges physical reality and structural truth.',
+    whyChanged: 'Visiting monumental civic concrete structures and studying materials science.'
+  }
+];
+
 export default function IdeasPage() {
-  const allNodes = getAllNodes();
-  const ideaNodes = allNodes.filter(
-    n => n.type === 'PHILOSOPHY' || n.type === 'IDEA' || n.type === 'THEORY' || n.tags.includes('philosophy')
-  );
+  const { setCursor, resetCursor } = useInteractionStore();
+  const [ideas, setIdeas] = useState<NodeItem[]>([]);
+  const [selectedEvolution, setSelectedEvolution] = useState<number>(0);
+
+  useEffect(() => {
+    fetch('/api/nodes')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const ideaNodes = data.filter(
+            n => n.type === 'PHILOSOPHY' || n.type === 'IDEA' || n.type === 'THEORY' || n.tags.includes('philosophy')
+          );
+          setIdeas(ideaNodes);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const activeEvo = EVOLUTIONS[selectedEvolution];
 
   return (
     <div className={styles.container}>
@@ -18,54 +73,140 @@ export default function IdeasPage() {
             <Lightbulb size={18} color="var(--accent-gold)" />
             <span className="mono-tag" style={{ color: 'var(--accent-gold)' }}>Thinking Space & Hypotheses</span>
           </div>
-          <h1 className={styles.heroHeadline}>IDEAS & BELIEFS</h1>
-          <p className={styles.heroSubline}>
-            “What I believe, what I question, and what I have changed my mind about.”
+          <h1 className={styles.title}>IDEAS & BELIEFS</h1>
+          <p className={styles.subtitle}>
+            “What I believe, what I question, and what I have changed my mind about across time.”
           </p>
         </div>
       </header>
 
-      {/* Feature Callout: What I used to think */}
-      <section className={styles.spotlightCard} style={{ borderLeftColor: 'var(--accent-amethyst)' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-amethyst)', fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>
-            <History size={13} />
-            <span>INTELLECTUAL EVOLUTION (WHAT I USED TO THINK)</span>
+      {/* "What I Used to Think" Interactive Evolution Timeline */}
+      <section
+        style={{
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-sm)',
+          padding: '28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          boxShadow: 'var(--shadow-md)'
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-amethyst)' }}>
+            <History size={16} />
+            <span style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              INTELLECTUAL EVOLUTION: “WHAT I USED TO THINK”
+            </span>
           </div>
-          <div className={styles.spotlightTitle} style={{ fontSize: '1.4rem' }}>
-            Preserve Old Hypotheses Instead of Silently Erasing Them
+
+          <div style={{ display: 'flex', gap: '6px' }}>
+            {EVOLUTIONS.map((evo, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedEvolution(idx)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: 'var(--radius-xs)',
+                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-mono)',
+                  background: selectedEvolution === idx ? 'var(--accent-amethyst)' : 'var(--bg-surface-raised)',
+                  color: selectedEvolution === idx ? 'var(--bg-abyss)' : 'var(--text-muted)',
+                  fontWeight: selectedEvolution === idx ? 600 : 400,
+                  border: '1px solid var(--border-subtle)'
+                }}
+              >
+                {evo.topic}
+              </button>
+            ))}
           </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '4px' }}>
-            Every idea node supports multiple versions. When your stance shifts, the system keeps the past record as evidence of personal growth.
-          </p>
+        </div>
+
+        {/* Comparison columns */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          {/* Past */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid var(--border-faint)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+              <GitCommit size={13} />
+              <span>WHAT I THOUGHT IN {activeEvo.pastYear}</span>
+            </div>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--text-secondary)', lineHeight: 1.4, fontStyle: 'italic' }}>
+              “{activeEvo.pastBelief}”
+            </div>
+          </div>
+
+          {/* Current */}
+          <div
+            style={{
+              background: 'rgba(168, 123, 230, 0.08)',
+              border: '1px solid rgba(168, 123, 230, 0.3)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-amethyst)' }}>
+              <Sparkles size={13} />
+              <span>WHAT I BELIEVE NOW ({activeEvo.currentYear})</span>
+            </div>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--text-primary)', lineHeight: 1.4, fontStyle: 'italic' }}>
+              “{activeEvo.currentBelief}”
+            </div>
+          </div>
+        </div>
+
+        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border-faint)', paddingTop: '10px' }}>
+          <strong style={{ color: 'var(--text-secondary)' }}>Catalyst for change: </strong> {activeEvo.whyChanged}
         </div>
       </section>
 
+      {/* Active Ideas Grid */}
       <section>
-        <div className={styles.sectionTitle}>Active Philosophical Nodes & Hypotheses</div>
+        <div className={styles.sectionTitle}>
+          <span>Active Philosophical Frameworks & Hypotheses ({ideas.length})</span>
+        </div>
+
         <div className={styles.nodesGrid}>
-          {ideaNodes.map(idea => (
-            <Link key={idea.id} href={`/node/${idea.slug || idea.id}`} className={styles.nodeCard}>
-              <div className={styles.nodeHeader}>
-                <span className="badge" style={{ color: '#c678dd', borderColor: 'rgba(198,120,221,0.4)' }}>
-                  {idea.type}
-                </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Lvl {idea.learningState}</span>
-              </div>
-              <div className={styles.nodeTitle}>{idea.title}</div>
-              <p className={styles.nodeSummary}>{idea.summary}</p>
-              {idea.whyCare && (
-                <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontStyle: 'italic', marginTop: '6px' }}>
-                  “{idea.whyCare}”
+          {ideas.map(idea => (
+            <CardTilt key={idea.id} maxTilt={10}>
+              <Link href={`/node/${idea.slug || idea.id}`} className={styles.nodeCard}>
+                <div className={styles.nodeHeader}>
+                  <span className="badge" style={{ color: '#c678dd', borderColor: 'rgba(198,120,221,0.4)' }}>
+                    {idea.type}
+                  </span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Lvl {idea.learningState}</span>
                 </div>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '10px' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-faint)', fontFamily: 'var(--font-mono)' }}>
-                  {idea.uncertaintyLevel.replace('_', ' ')}
-                </span>
-                <ArrowRight size={13} color="var(--text-muted)" />
-              </div>
-            </Link>
+
+                <div className={styles.nodeTitle}>{idea.title}</div>
+                <p className={styles.nodeSummary}>{idea.summary}</p>
+
+                {idea.whyCare && (
+                  <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontStyle: 'italic', marginTop: '6px' }}>
+                    “{idea.whyCare}”
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '10px' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-faint)', fontFamily: 'var(--font-mono)' }}>
+                    {idea.uncertaintyLevel.replace('_', ' ')}
+                  </span>
+                  <ArrowRight size={13} color="var(--accent-gold)" />
+                </div>
+              </Link>
+            </CardTilt>
           ))}
         </div>
       </section>

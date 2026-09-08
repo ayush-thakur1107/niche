@@ -17,7 +17,9 @@ import {
   User,
   Plus,
   Search,
-  Sparkles
+  Sparkles,
+  Atom,
+  Archive
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
@@ -50,12 +52,15 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
   const navLinks = [
     { href: '/', label: 'Overview', icon: Compass },
     { href: '/atlas', label: 'Atlas Universe', icon: Map, badge: stats.totalNodes },
+    { href: '/lab', label: 'Interaction Lab', icon: Sparkles },
     { href: '/cinema', label: 'Cinematheque', icon: Film },
     { href: '/library', label: 'Library', icon: BookOpen },
     { href: '/ideas', label: 'Ideas & Beliefs', icon: Lightbulb },
     { href: '/roadmaps', label: 'Roadmaps & Skills', icon: Milestone },
     { href: '/fitness', label: 'Body & Fitness', icon: Dumbbell },
     { href: '/vocabulary', label: 'Vocabulary', icon: BookA },
+    { href: '/physics', label: 'Physics Lab', icon: Atom },
+    { href: '/museum', label: 'Museum (Curiosities)', icon: Archive },
     { href: '/timeline', label: 'Life Timeline', icon: History },
     { href: '/inbox', label: 'Inbox', icon: Inbox, badge: stats.inboxCount > 0 ? stats.inboxCount : undefined },
     { href: '/me', label: 'Me (Atlas of Self)', icon: User }
@@ -68,12 +73,12 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
           NICHE MAXING
           <span className={styles.logoBadge}>PRO</span>
         </div>
-        <div className={styles.domainTag}>niche.ayushthakur.space</div>
+        <div className={styles.domainTag}>ayushthakur.space</div>
       </div>
 
       <nav className={styles.navSection}>
         <div className={styles.sectionLabel}>The Universe</div>
-        {navLinks.slice(0, 2).map(link => {
+        {navLinks.slice(0, 3).map(link => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
           return (
@@ -94,7 +99,7 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
         })}
 
         <div className={styles.sectionLabel}>Disciplines & Taste</div>
-        {navLinks.slice(2, 8).map(link => {
+        {navLinks.slice(3, 10).map(link => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
           return (
@@ -112,7 +117,7 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
         })}
 
         <div className={styles.sectionLabel}>Evolution & Capture</div>
-        {navLinks.slice(8).map(link => {
+        {navLinks.slice(10).map(link => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
           return (

@@ -1,0 +1,571 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  ExternalLink,
+  Radio,
+  Music2,
+  ChevronUp,
+  ChevronDown,
+  Link as LinkIcon,
+  Check,
+  Sparkles,
+  Disc3,
+  X,
+  Volume2
+} from 'lucide-react';
+import {
+  useInteractionStore,
+  CURATED_TRACKS,
+  SPOTIFY_PRESETS,
+  Track
+} from '../store';
+import styles from './PersistentMusicPlayer.module.css';
+
+export function PersistentMusicPlayer() {
+  const {
+    currentTrack,
+    isPlaying,
+    isPlayerExpanded,
+    togglePlay,
+    playTrack,
+    togglePlayerExpanded,
+    setPlayerExpanded,
+    userSpotifyLink,
+    userSpotifyEmbedUrl,
+    setSpotifyLink,
+    setCursor,
+    resetCursor
+  } = useInteractionStore();
+
+  const [progress, setProgress] = useState(32); // percentage
+  const [inputUrl, setInputUrl] = useState(userSpotifyLink);
+  const [justLinked, setJustLinked] = useState(false);
+  const [activeTab, setActiveTab] = useState<'spotify' | 'queue' | 'presets'>('spotify');
+
+  useEffect(() => {
+    let interval: any;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setProgress((p) => (p >= 100 ? 0 : p + 0.5));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const handleNextTrack = () => {
+    if (!currentTrack) return;
+    const currentIndex = CURATED_TRACKS.findIndex((t) => t.id === currentTrack.id);
+    const nextIndex = (currentIndex + 1) % CURATED_TRACKS.length;
+    playTrack(CURATED_TRACKS[nextIndex]);
+  };
+
+  const handlePrevTrack = () => {
+    if (!currentTrack) return;
+    const currentIndex = CURATED_TRACKS.findIndex((t) => t.id === currentTrack.id);
+    const prevIndex = (currentIndex - 1 + CURATED_TRACKS.length) % CURATED_TRACKS.length;
+    playTrack(CURATED_TRACKS[prevIndex]);
+  };
+
+  const handleSaveSpotifyLink = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!inputUrl.trim()) return;
+    setSpotifyLink(inputUrl.trim());
+    setJustLinked(true);
+    setTimeout(() => setJustLinked(false), 2400);
+  };
+
+  if (!currentTrack) return null;
+
+  return (
+    <>
+      {/* 1. Persistent Bottom Bar */}
+      <div
+        className={styles.bar}
+        onMouseEnter={() => setCursor('PLAY')}
+        onMouseLeave={() => resetCursor()}
+      >
+        {/* Track Metadata / Click to Expand */}
+        <div
+          className={styles.trackInfo}
+          onClick={togglePlayerExpanded}
+          title="Click to open Niche Music Room & Spotify Hub"
+        >
+          <img
+            src={currentTrack.coverImage}
+            alt={currentTrack.title}
+            className={`${styles.albumArt} ${isPlaying ? styles.vinylSpin : ''}`}
+          />
+          <div className={styles.metaText}>
+            <span className={styles.title}>{currentTrack.title}</span>
+            <span className={styles.artist}>
+              {currentTrack.artist} · {currentTrack.genre}
+            </span>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#8e8e9c',
+              marginLeft: '4px'
+            }}
+          >
+            {isPlayerExpanded ? <ChevronDown size={15} /> : <ChevronUp size={15} />}
+          </div>
+        </div>
+
+        {/* Central Playback Controls */}
+        <div className={styles.controls}>
+          <button className={styles.controlBtn} onClick={handlePrevTrack} title="Previous Track">
+            <SkipBack size={16} />
+          </button>
+
+          <button
+            className={styles.playPauseBtn}
+            onClick={togglePlay}
+            title={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? <Pause size={17} /> : <Play size={17} style={{ marginLeft: '2px' }} />}
+          </button>
+
+          <button className={styles.controlBtn} onClick={handleNextTrack} title="Next Track">
+            <SkipForward size={16} />
+          </button>
+
+          {/* Progress Scrubber */}
+          <div className={styles.progressContainer}>
+            <span className={styles.timeTag}>04:36</span>
+            <div
+              className={styles.progressBar}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                setProgress((clickX / rect.width) * 100);
+              }}
+            >
+              <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+            </div>
+            <span className={styles.timeTag}>{currentTrack.duration}</span>
+          </div>
+        </div>
+
+        {/* Right Actions & External Links */}
+        <div className={styles.rightActions}>
+          <button
+            onClick={() => {
+              setPlayerExpanded(true);
+              setActiveTab('spotify');
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 10px',
+              borderRadius: '6px',
+              background: 'rgba(29, 185, 84, 0.15)',
+              border: '1px solid rgba(29, 185, 84, 0.35)',
+              color: '#1ed760',
+              fontSize: '0.72rem',
+              fontWeight: 650,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            title="Link and manage your personal Spotify"
+          >
+            <Music2 size={13} />
+            <span>Link Spotify</span>
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)' }}>
+            <Radio size={14} color={isPlaying ? 'var(--accent-sage)' : 'var(--text-muted)'} />
+            <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)' }}>
+              {isPlaying ? 'STREAMING' : 'READY'}
+            </span>
+          </div>
+
+          <a
+            href={userSpotifyLink || currentTrack.externalUrl}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.externalLinkBtn}
+            title="Open in Spotify App"
+          >
+            <span>Spotify</span>
+            <ExternalLink size={12} />
+          </a>
+        </div>
+      </div>
+
+      {/* 2. Expanded Music Room & Spotify Hub Modal */}
+      <AnimatePresence>
+        {isPlayerExpanded && (
+          <motion.div
+            key="music-room-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 99990,
+              background: 'rgba(5, 5, 8, 0.85)',
+              backdropFilter: 'blur(18px)',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+              paddingBottom: '80px'
+            }}
+            onClick={() => setPlayerExpanded(false)}
+          >
+            <motion.div
+              initial={{ y: 80, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 80, opacity: 0, scale: 0.98 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: '820px',
+                background: 'linear-gradient(160deg, #13131a 0%, #09090e 100%)',
+                border: '1px solid rgba(226, 168, 87, 0.3)',
+                borderRadius: '20px',
+                padding: '28px 32px',
+                boxShadow: '0 30px 80px rgba(0, 0, 0, 0.85), 0 0 50px rgba(226, 168, 87, 0.12)',
+                maxHeight: '85vh',
+                overflowY: 'auto'
+              }}
+            >
+              {/* Header */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                  paddingBottom: '16px',
+                  marginBottom: '20px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div
+                    style={{
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '50%',
+                      background: 'rgba(29, 185, 84, 0.15)',
+                      border: '1px solid rgba(29, 185, 84, 0.4)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Music2 size={18} color="#1ed760" />
+                  </div>
+                  <div>
+                    <h2
+                      style={{
+                        fontFamily: 'var(--font-serif, "Cormorant Garamond", serif)',
+                        fontSize: '1.45rem',
+                        fontWeight: 600,
+                        color: '#ffffff',
+                        margin: 0
+                      }}
+                    >
+                      Niche Music Room & Spotify Hub
+                    </h2>
+                    <div style={{ fontSize: '0.72rem', color: '#8e8e9c', letterSpacing: '0.04em' }}>
+                      Your personal audio soundtrack linked seamlessly into the universe
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {/* Tab switchers */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      borderRadius: '8px',
+                      padding: '2px',
+                      border: '1px solid rgba(255, 255, 255, 0.06)'
+                    }}
+                  >
+                    <button
+                      onClick={() => setActiveTab('spotify')}
+                      style={{
+                        padding: '5px 12px',
+                        borderRadius: '6px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        background: activeTab === 'spotify' ? 'rgba(29, 185, 84, 0.2)' : 'transparent',
+                        color: activeTab === 'spotify' ? '#1ed760' : '#8e8e9c',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Spotify Embed
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('presets')}
+                      style={{
+                        padding: '5px 12px',
+                        borderRadius: '6px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        background: activeTab === 'presets' ? 'rgba(226, 168, 87, 0.2)' : 'transparent',
+                        color: activeTab === 'presets' ? '#e2a857' : '#8e8e9c',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Curated Playlists
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('queue')}
+                      style={{
+                        padding: '5px 12px',
+                        borderRadius: '6px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        background: activeTab === 'queue' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
+                        color: activeTab === 'queue' ? '#38bdf8' : '#8e8e9c',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Universe Tracks
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => setPlayerExpanded(false)}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '30px',
+                      height: '30px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#a0a0ab',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Link Your Spotify Input Bar */}
+              <form
+                onSubmit={handleSaveSpotifyLink}
+                style={{
+                  background: 'rgba(20, 20, 28, 0.6)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  marginBottom: '20px',
+                  display: 'flex',
+                  gap: '12px',
+                  alignItems: 'center'
+                }}
+              >
+                <LinkIcon size={16} color="#1ed760" />
+                <input
+                  type="text"
+                  value={inputUrl}
+                  onChange={(e) => setInputUrl(e.target.value)}
+                  placeholder="Paste your Spotify playlist, track, album, or user profile URL..."
+                  style={{
+                    flex: 1,
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#f0f0f5',
+                    fontSize: '0.84rem',
+                    outline: 'none'
+                  }}
+                />
+                <button
+                  type="submit"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 18px',
+                    borderRadius: '8px',
+                    background: justLinked
+                      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                      : 'linear-gradient(135deg, #1ed760 0%, #169c46 100%)',
+                    border: 'none',
+                    color: '#050508',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {justLinked ? <Check size={14} /> : <Sparkles size={14} />}
+                  <span>{justLinked ? 'Linked!' : 'Link Spotify'}</span>
+                </button>
+              </form>
+
+              {/* TAB 1: Live Spotify Embed */}
+              {activeTab === 'spotify' && (
+                <div>
+                  <div
+                    style={{
+                      borderRadius: '14px',
+                      overflow: 'hidden',
+                      border: '1px solid rgba(29, 185, 84, 0.25)',
+                      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+                      background: '#121212',
+                      minHeight: '352px'
+                    }}
+                  >
+                    {userSpotifyEmbedUrl ? (
+                      <iframe
+                        src={userSpotifyEmbedUrl}
+                        width="100%"
+                        height="352"
+                        frameBorder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                        style={{ display: 'block', borderRadius: '12px' }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          height: '352px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#8e8e9c',
+                          gap: '12px'
+                        }}
+                      >
+                        <Music2 size={36} color="#1ed760" />
+                        <div>Paste any Spotify URL above to stream your music directly here.</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: Curated Playlists */}
+              {activeTab === 'presets' && (
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gap: '14px'
+                  }}
+                >
+                  {SPOTIFY_PRESETS.map((preset) => (
+                    <div
+                      key={preset.id}
+                      onClick={() => {
+                        setInputUrl(preset.url);
+                        setSpotifyLink(preset.url);
+                        setActiveTab('spotify');
+                      }}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border:
+                          userSpotifyLink === preset.url
+                            ? '1px solid #1ed760'
+                            : '1px solid rgba(255, 255, 255, 0.08)',
+                        borderRadius: '12px',
+                        padding: '16px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '0.68rem',
+                          color: '#1ed760',
+                          fontWeight: 700,
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                          marginBottom: '4px'
+                        }}
+                      >
+                        {preset.category}
+                      </div>
+                      <div style={{ fontSize: '0.94rem', fontWeight: 650, color: '#f0f0f5', marginBottom: '6px' }}>
+                        {preset.name}
+                      </div>
+                      <p style={{ fontSize: '0.78rem', color: '#8e8e9c', lineHeight: 1.4, margin: 0 }}>
+                        {preset.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* TAB 3: Universe Tracks */}
+              {activeTab === 'queue' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {CURATED_TRACKS.map((track) => {
+                    const isCurrent = currentTrack.id === track.id;
+                    return (
+                      <div
+                        key={track.id}
+                        onClick={() => playTrack(track)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '10px 14px',
+                          borderRadius: '10px',
+                          background: isCurrent ? 'rgba(226, 168, 87, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                          border: isCurrent ? '1px solid #e2a857' : '1px solid rgba(255, 255, 255, 0.06)',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <img
+                            src={track.coverImage}
+                            alt={track.title}
+                            style={{ width: '38px', height: '38px', borderRadius: '6px', objectFit: 'cover' }}
+                          />
+                          <div>
+                            <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#f0f0f5' }}>
+                              {track.title}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#8e8e9c' }}>
+                              {track.artist} · {track.genre}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ fontSize: '0.74rem', fontFamily: 'monospace', color: '#8e8e9c' }}>
+                            {track.duration}
+                          </span>
+                          {isCurrent && (
+                            <span style={{ fontSize: '0.7rem', color: '#e2a857', fontWeight: 700 }}>
+                              PLAYING
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

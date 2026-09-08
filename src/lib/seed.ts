@@ -112,6 +112,48 @@ export function getSeedDatabase(): DatabaseSchema {
       updatedAt: now
     },
     {
+      id: 'node-sisyphus',
+      slug: 'the-myth-of-sisyphus',
+      title: 'The Myth of Sisyphus',
+      type: 'BOOK',
+      summary: '1942 philosophical essay by Albert Camus introducing the Absurd and the necessity of revolt without appeal.',
+      coverImage: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80',
+      uncertaintyLevel: 'known',
+      learningState: 5,
+      whyCare: 'The definitive philosophical manifesto: creating meaning through unyielding defiance.',
+      tags: ['philosophy', 'camus', 'absurdism', 'book', 'essay'],
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'node-meditations',
+      slug: 'meditations',
+      title: 'Meditations',
+      type: 'BOOK',
+      summary: 'Private personal reflections of Roman Emperor Marcus Aurelius on Stoic duty, transient existence, and self-command.',
+      coverImage: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop&q=80',
+      uncertaintyLevel: 'known',
+      learningState: 5,
+      whyCare: 'Written by the most powerful ruler of his era purely to admonish himself against vanity.',
+      tags: ['stoicism', 'philosophy', 'ancient-rome', 'book', 'journal'],
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'node-ficciones',
+      slug: 'ficciones',
+      title: 'Ficciones',
+      type: 'BOOK',
+      summary: 'Jorge Luis Borges’s labyrinthine tales exploring infinite libraries, conceptual encyclopedias, and forking paths of time.',
+      coverImage: 'https://images.unsplash.com/photo-1507842229450-798835824c94?w=800&auto=format&fit=crop&q=80',
+      uncertaintyLevel: 'known',
+      learningState: 6,
+      whyCare: 'The Library of Babel and Tlön, Uqbar, Orbis Tertius are the ultimate spiritual ancestors of Niche Maxing.',
+      tags: ['literature', 'borges', 'labyrinths', 'book', 'short-stories'],
+      createdAt: now,
+      updatedAt: now
+    },
+    {
       id: 'node-camus',
       slug: 'albert-camus',
       title: 'Albert Camus',
@@ -207,6 +249,34 @@ export function getSeedDatabase(): DatabaseSchema {
       tags: ['vocabulary', 'memory', 'metaphor', 'parchment'],
       createdAt: now,
       updatedAt: now
+    },
+    {
+      id: 'node-bladerunner',
+      slug: 'blade-runner-2049',
+      title: 'Blade Runner 2049',
+      type: 'MOVIE',
+      summary: 'Denis Villeneuve’s neo-noir sci-fi masterpiece exploring artificial consciousness, manufactured memories, and existential sacrifice.',
+      coverImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+      uncertaintyLevel: 'known',
+      learningState: 5,
+      whyCare: 'Roger Deakins’s brutalist amber cinematography and K’s realization that he does not need to be the chosen one to make a moral choice.',
+      tags: ['cinema', 'movie', 'sci-fi', 'villeneuve', 'noir'],
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'node-stalker',
+      slug: 'stalker',
+      title: 'Stalker (1979)',
+      type: 'MOVIE',
+      summary: 'Andrei Tarkovsky’s metaphysical pilgrimage through the hazardous landscape of the Zone towards the Room of Desires.',
+      coverImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80',
+      uncertaintyLevel: 'known',
+      learningState: 5,
+      whyCare: 'The long, slow tracking shots through sepia industrial decay and the quiet realization of what human beings actually desire.',
+      tags: ['cinema', 'movie', 'tarkovsky', 'soviet', 'metaphysics'],
+      createdAt: now,
+      updatedAt: now
     }
   ];
 
@@ -224,7 +294,12 @@ export function getSeedDatabase(): DatabaseSchema {
     'node-brutalism': { x: 150, y: 320 },
     'node-hammer-curls': { x: -50, y: 420 },
     'node-muay-thai': { x: 420, y: 360 },
-    'node-palimpsest': { x: 500, y: -300 }
+    'node-palimpsest': { x: 500, y: -300 },
+    'node-bladerunner': { x: 260, y: -360 },
+    'node-stalker': { x: 100, y: -450 },
+    'node-sisyphus': { x: 420, y: -260 },
+    'node-meditations': { x: 580, y: -200 },
+    'node-ficciones': { x: 380, y: -450 }
   };
 
   const connections: ConnectionItem[] = [

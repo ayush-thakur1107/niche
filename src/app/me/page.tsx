@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { User, Compass, Sparkles, Share2, Layers, ArrowRight } from 'lucide-react';
 import { getAllNodes, getAllConnections, getUniverseStats } from '@/lib/storage';
 import { LEARNING_STATE_LABELS, LearningState } from '@/lib/types';
+import { SpotifyLayerCard } from '@/components/audio/SpotifyLayerCard';
 import styles from '../page.module.css';
 
 export default function MePage() {
@@ -79,6 +80,9 @@ export default function MePage() {
           Your universe clusters around the intersection of <strong>rigorous classical historical inquiry</strong>, <strong>lucid existential philosophy</strong>, <strong>structural aesthetic honesty</strong> (Brutalism & Sartorial balance), and <strong>uncompromising physical discipline</strong>. This is not a fixed label—it is an emerging pattern of your personal curiosity gravity.
         </p>
       </section>
+
+      {/* Section 16: Personal Audio Layer (Spotify) */}
+      <SpotifyLayerCard />
 
       {/* Intellectual Hubs (Section 95: Interest Gravity) */}
       <section>

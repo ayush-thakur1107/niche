@@ -1,13 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { CommandPalette } from './CommandPalette';
 import { QuickCaptureModal } from './QuickCaptureModal';
 import { CreateNodeModal } from '../common/CreateNodeModal';
+import { UniverseFooter } from './UniverseFooter';
+import { SmartCursor } from '@/interaction/cursor/SmartCursor';
+import { LenisProvider } from '@/interaction/scroll/LenisProvider';
+import { PersistentMusicPlayer } from '@/interaction/audio/PersistentMusicPlayer';
 import styles from '@/app/layout.module.css';
 
 export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState(false);
   const [isCreateNodeOpen, setIsCreateNodeOpen] = useState(false);
@@ -42,38 +48,44 @@ export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className={styles.appContainer}>
-      <Sidebar
-        onOpenCreateNode={() => setIsCreateNodeOpen(true)}
-        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-      />
+    <LenisProvider>
+      <SmartCursor />
+      <div className={styles.appContainer}>
+        <Sidebar
+          onOpenCreateNode={() => setIsCreateNodeOpen(true)}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        />
 
-      <main className={styles.mainContent}>
-        {children}
-      </main>
+        <main className={styles.mainContent}>
+          {children}
+          {pathname !== '/atlas' && <UniverseFooter />}
+        </main>
 
-      <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-        onOpenCreateNode={() => {
-          setIsCommandPaletteOpen(false);
-          setIsCreateNodeOpen(true);
-        }}
-        onOpenQuickCapture={() => {
-          setIsCommandPaletteOpen(false);
-          setIsQuickCaptureOpen(true);
-        }}
-      />
+        <PersistentMusicPlayer />
 
-      <QuickCaptureModal
-        isOpen={isQuickCaptureOpen}
-        onClose={() => setIsQuickCaptureOpen(false)}
-      />
+        <CommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          onOpenCreateNode={() => {
+            setIsCommandPaletteOpen(false);
+            setIsCreateNodeOpen(true);
+          }}
+          onOpenQuickCapture={() => {
+            setIsCommandPaletteOpen(false);
+            setIsQuickCaptureOpen(true);
+          }}
+        />
 
-      <CreateNodeModal
-        isOpen={isCreateNodeOpen}
-        onClose={() => setIsCreateNodeOpen(false)}
-      />
-    </div>
+        <QuickCaptureModal
+          isOpen={isQuickCaptureOpen}
+          onClose={() => setIsQuickCaptureOpen(false)}
+        />
+
+        <CreateNodeModal
+          isOpen={isCreateNodeOpen}
+          onClose={() => setIsCreateNodeOpen(false)}
+        />
+      </div>
+    </LenisProvider>
   );
 }
