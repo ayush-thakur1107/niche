@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/ayush-thakur1107/niche#readme",
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@types/node": "^26.5.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

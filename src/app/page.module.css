@@ -19,55 +19,59 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  padding-bottom: 28px;
-  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .heroHeadline {
   font-family: var(--font-serif);
-  font-size: 3.4rem;
-  line-height: 1.1;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
+  font-size: 3.6rem;
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  color: #f2f2f5;
 }
 
 .heroSubline {
   font-family: var(--font-serif);
-  font-size: 1.4rem;
+  font-size: 1.38rem;
   font-style: italic;
+  font-weight: 400;
   color: var(--accent-gold);
-  margin-top: 8px;
+  margin-top: 10px;
+  letter-spacing: -0.01em;
 }
 
 .enterAtlasBtn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--accent-gold);
-  color: var(--bg-abyss);
-  padding: 12px 22px;
-  border-radius: var(--radius-sm);
+  color: #070709;
+  padding: 12px 24px;
+  border-radius: 4px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   text-decoration: none;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-glow);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 18px rgba(226, 168, 87, 0.2);
 }
 
 .enterAtlasBtn:hover {
   background: #ecc07e;
   transform: translateY(-2px);
-  color: var(--bg-abyss);
+  box-shadow: 0 8px 24px rgba(226, 168, 87, 0.3);
+  color: #070709;
 }
 
 /* Currently Section (Section 30) */
 .sectionTitle {
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  color: #8e8e9c;
+  font-weight: 500;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -77,59 +81,69 @@
 .currentlyGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
+  gap: 14px;
 }
 
 .currentlyCard {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  background: #0c0d12;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
   padding: 18px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  transition: border-color var(--transition-fast);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .currentlyCard:hover {
-  border-color: var(--border-muted);
+  border-color: rgba(226, 168, 87, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .currentlyLabel {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-family: var(--font-mono);
   text-transform: uppercase;
+  letter-spacing: 0.12em;
   color: var(--accent-gold);
+  font-weight: 500;
 }
 
 .currentlyValue {
-  font-size: 0.92rem;
-  font-weight: 550;
-  color: var(--text-primary);
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  font-weight: 500;
+  color: #f2f2f5;
+  line-height: 1.25;
 }
 
 .currentlyDesc {
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  color: #8e8e9c;
+  line-height: 1.5;
 }
 
 /* Spotlight & Archive */
 .spotlightCard {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: #0c0d12;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-left: 3px solid var(--accent-gold);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   padding: 24px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 
 .spotlightTitle {
   font-family: var(--font-serif);
-  font-size: 1.6rem;
-  color: var(--text-primary);
+  font-size: 1.7rem;
+  font-weight: 500;
+  color: #f2f2f5;
+  line-height: 1.2;
 }
 
 /* Discoveries Grid */

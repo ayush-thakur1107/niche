@@ -12,6 +12,8 @@ import {
   Milestone
 } from 'lucide-react';
 import { getAllNodes, getAllConnections, getUniverseStats } from '@/lib/storage';
+import { StatsLedger } from '@/components/dashboard/StatsLedger';
+import { StaggeredNodesGrid } from '@/components/dashboard/StaggeredNodesGrid';
 import styles from './page.module.css';
 
 export const revalidate = 0; // Dynamic server-side rendering
@@ -139,43 +141,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className={styles.nodesGrid}>
-          {nodes.slice(0, 8).map(node => (
-            <Link
-              key={node.id}
-              href={`/node/${node.slug || node.id}`}
-              className={styles.nodeCard}
-            >
-              <div className={styles.nodeHeader}>
-                <span
-                  style={{
-                    fontSize: '0.68rem',
-                    fontFamily: 'var(--font-mono)',
-                    color: 'var(--accent-gold)',
-                    textTransform: 'uppercase',
-                    fontWeight: 600
-                  }}
-                >
-                  {node.type}
-                </span>
-
-                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                  Lvl {node.learningState}
-                </span>
-              </div>
-
-              <div className={styles.nodeTitle}>{node.title}</div>
-              {node.summary && <div className={styles.nodeSummary}>{node.summary}</div>}
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid var(--border-faint)' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-faint)', fontFamily: 'var(--font-mono)' }}>
-                  {node.uncertaintyLevel.replace('_', ' ')}
-                </span>
-                <ArrowRight size={13} color="var(--text-muted)" />
-              </div>
-            </Link>
-          ))}
-        </div>
+        <StaggeredNodesGrid nodes={nodes.slice(0, 8)} />
       </section>
 
       {/* Universe Metrics (Section 58, 85) */}
@@ -185,27 +151,12 @@ export default async function HomePage() {
           <span>Your World At A Glance</span>
         </div>
 
-        <div className={styles.statsRow}>
-          <div className={styles.statBox}>
-            <div className={styles.statNumber}>{stats.totalNodes}</div>
-            <div className={styles.statLabel}>Total Universe Nodes</div>
-          </div>
-
-          <div className={styles.statBox}>
-            <div className={styles.statNumber}>{stats.totalConnections}</div>
-            <div className={styles.statLabel}>Established Connections</div>
-          </div>
-
-          <div className={styles.statBox}>
-            <div className={styles.statNumber}>{Object.keys(stats.typeCounts).length}</div>
-            <div className={styles.statLabel}>Distinct Disciplines</div>
-          </div>
-
-          <div className={styles.statBox}>
-            <div className={styles.statNumber}>{stats.totalSources}</div>
-            <div className={styles.statLabel}>Verified Citations</div>
-          </div>
-        </div>
+        <StatsLedger
+          totalNodes={stats.totalNodes}
+          totalConnections={stats.totalConnections}
+          distinctDisciplines={Object.keys(stats.typeCounts).length}
+          totalSources={stats.totalSources}
+        />
       </section>
     </div>
   );

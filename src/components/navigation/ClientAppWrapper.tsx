@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { Sidebar } from './Sidebar';
 import { CommandPalette } from './CommandPalette';
 import { QuickCaptureModal } from './QuickCaptureModal';
@@ -47,6 +49,31 @@ export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const mainRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      if (!mainRef.current) return;
+      gsap.fromTo(
+        mainRef.current,
+        {
+          opacity: 0.35,
+          scale: 0.992,
+          filter: 'blur(2px)'
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          filter: 'blur(0px)',
+          duration: 0.35,
+          ease: 'power2.out',
+          clearProps: 'transform,filter,opacity'
+        }
+      );
+    },
+    { dependencies: [pathname] }
+  );
+
   return (
     <LenisProvider>
       <SmartCursor />
@@ -56,7 +83,7 @@ export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         />
 
-        <main className={styles.mainContent}>
+        <main ref={mainRef} className={styles.mainContent}>
           {children}
           {pathname !== '/atlas' && <UniverseFooter />}
         </main>

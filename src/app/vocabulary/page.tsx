@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { BookA, Sparkles, ArrowRight } from 'lucide-react';
 import { getAllNodes } from '@/lib/storage';
+import { NodeCard } from '@/components/cards/NodeCard';
 import styles from '../page.module.css';
 
 export default function VocabularyPage() {
@@ -72,19 +73,7 @@ export default function VocabularyPage() {
         <div className={styles.sectionTitle}>Adopted Words in Universe</div>
         <div className={styles.nodesGrid}>
           {vocabNodes.map(node => (
-            <Link key={node.id} href={`/node/${node.slug || node.id}`} className={styles.nodeCard}>
-              <div className={styles.nodeHeader}>
-                <span className="badge" style={{ color: '#56b6c2', borderColor: 'rgba(86,182,194,0.4)' }}>WORD</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Lvl {node.learningState}</span>
-              </div>
-              <div className={styles.nodeTitle}>{node.title}</div>
-              <p className={styles.nodeSummary}>{node.summary}</p>
-              {node.whyCare && (
-                <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontStyle: 'italic', marginTop: '6px' }}>
-                  “{node.whyCare}”
-                </div>
-              )}
-            </Link>
+            <NodeCard key={node.id} node={node} />
           ))}
         </div>
       </section>

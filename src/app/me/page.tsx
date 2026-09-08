@@ -4,6 +4,7 @@ import { User, Compass, Sparkles, Share2, Layers, ArrowRight } from 'lucide-reac
 import { getAllNodes, getAllConnections, getUniverseStats } from '@/lib/storage';
 import { LEARNING_STATE_LABELS, LearningState } from '@/lib/types';
 import { SpotifyLayerCard } from '@/components/audio/SpotifyLayerCard';
+import { NodeCard } from '@/components/cards/NodeCard';
 import styles from '../page.module.css';
 
 export default function MePage() {
@@ -93,20 +94,7 @@ export default function MePage() {
 
         <div className={styles.nodesGrid}>
           {hubs.map(node => (
-            <Link key={node.id} href={`/node/${node.slug || node.id}`} className={styles.nodeCard}>
-              <div className={styles.nodeHeader}>
-                <span className="badge" style={{ color: 'var(--accent-gold)' }}>{node.type}</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--accent-gold)', fontFamily: 'var(--font-mono)' }}>
-                  {degrees[node.id] || 0} connections
-                </span>
-              </div>
-              <div className={styles.nodeTitle}>{node.title}</div>
-              <p className={styles.nodeSummary}>{node.summary}</p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Lvl {node.learningState}</span>
-                <ArrowRight size={13} color="var(--text-muted)" />
-              </div>
-            </Link>
+            <NodeCard key={node.id} node={node} />
           ))}
         </div>
       </section>

@@ -6,6 +6,7 @@ import { Lightbulb, History, Sparkles, ArrowRight, GitCommit, Split } from 'luci
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
 import { NodeItem } from '@/lib/types';
+import { NodeCard } from '@/components/cards/NodeCard';
 import styles from '../page.module.css';
 
 interface EvolutionExample {
@@ -181,32 +182,7 @@ export default function IdeasPage() {
 
         <div className={styles.nodesGrid}>
           {ideas.map(idea => (
-            <CardTilt key={idea.id} maxTilt={10}>
-              <Link href={`/node/${idea.slug || idea.id}`} className={styles.nodeCard}>
-                <div className={styles.nodeHeader}>
-                  <span className="badge" style={{ color: '#c678dd', borderColor: 'rgba(198,120,221,0.4)' }}>
-                    {idea.type}
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Lvl {idea.learningState}</span>
-                </div>
-
-                <div className={styles.nodeTitle}>{idea.title}</div>
-                <p className={styles.nodeSummary}>{idea.summary}</p>
-
-                {idea.whyCare && (
-                  <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontStyle: 'italic', marginTop: '6px' }}>
-                    “{idea.whyCare}”
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '10px' }}>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-faint)', fontFamily: 'var(--font-mono)' }}>
-                    {idea.uncertaintyLevel.replace('_', ' ')}
-                  </span>
-                  <ArrowRight size={13} color="var(--accent-gold)" />
-                </div>
-              </Link>
-            </CardTilt>
+            <NodeCard key={idea.id} node={idea} />
           ))}
         </div>
       </section>
