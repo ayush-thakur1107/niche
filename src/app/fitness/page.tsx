@@ -25,29 +25,13 @@ export default function FitnessPage() {
       .catch(() => {});
   }, []);
 
-  const exercises = [
-    {
-      name: 'Hammer Curls (Strict)',
-      muscle: 'Brachialis / Forearms',
-      progression: ['12.5 kg', '15.0 kg', '17.5 kg (Current PR)'],
-      pr: '17.5 kg × 8 clean reps',
-      notes: 'Zero elbow swing, 2-second eccentric phase.'
-    },
-    {
-      name: 'Muay Thai Teep & Switch Kick',
-      muscle: 'Hip flexors / Core / Dynamic Balance',
-      progression: ['Bag balance', 'Pad combinations', 'Clean switch teep'],
-      pr: '5 × 3 min rounds uninterrupted',
-      notes: 'Focus on turning the hip over on right roundhouse.'
-    },
-    {
-      name: 'Deadlift (Conventional)',
-      muscle: 'Posterior chain',
-      progression: ['100 kg', '120 kg', '140 kg'],
-      pr: '140 kg × 5 reps',
-      notes: 'Double overhand with straps on top sets.'
-    }
-  ];
+  const exercises: Array<{
+    name: string;
+    muscle: string;
+    progression: string[];
+    pr: string;
+    notes: string;
+  }> = [];
 
   return (
     <div className={styles.container}>
@@ -105,97 +89,141 @@ export default function FitnessPage() {
 
       <section>
         <div className={styles.sectionTitle}>Tracked Disciplines & Progression Paths</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {exercises.map((ex, idx) => (
-            <div
-              key={idx}
+
+        {exercises.length === 0 && customExercises.length === 0 && (
+          <div
+            style={{
+              padding: '60px 24px',
+              textAlign: 'center',
+              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255, 255, 255, 0.015)'
+            }}
+          >
+            <Dumbbell size={28} color="var(--accent-gold)" style={{ margin: '0 auto 12px auto' }} />
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: '#fff', marginBottom: '8px' }}>
+              No physical disciplines recorded yet
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '440px', margin: '0 auto 20px auto' }}>
+              Log tangible physical capabilities, strength milestones, movement conditioning, or personal records without social vanity.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
               style={{
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border-subtle)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 18px',
+                background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+                color: '#08080a',
+                border: 'none',
                 borderRadius: 'var(--radius-sm)',
-                padding: '20px 24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px'
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.78rem',
+                fontWeight: 650,
+                cursor: 'pointer'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--text-primary)' }}>
-                    {ex.name}
-                  </h3>
-                  <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                    {ex.muscle}
-                  </span>
-                </div>
+              <Plus size={15} />
+              <span>Log Your First Exercise</span>
+            </button>
+          </div>
+        )}
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--accent-gold-bg)', padding: '4px 10px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-focus)' }}>
-                  <Trophy size={13} color="var(--accent-gold)" />
-                  <span style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-gold)', fontWeight: 600 }}>
-                    {ex.pr}
-                  </span>
-                </div>
-              </div>
-
-              {/* Trajectory */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                <TrendingUp size={14} color="var(--accent-sage)" />
-                <span>Progression: </span>
-                {ex.progression.map((step, sIdx) => (
-                  <React.Fragment key={sIdx}>
-                    <span style={{ color: sIdx === ex.progression.length - 1 ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                      {step}
+        {exercises.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {exercises.map((ex, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '20px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--text-primary)' }}>
+                      {ex.name}
+                    </h3>
+                    <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                      {ex.muscle}
                     </span>
-                    {sIdx < ex.progression.length - 1 && <span>→</span>}
-                  </React.Fragment>
-                ))}
-              </div>
+                  </div>
 
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic', borderTop: '1px solid var(--border-faint)', paddingTop: '8px' }}>
-                Note: {ex.notes}
-              </p>
-            </div>
-          ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--accent-gold-bg)', padding: '4px 10px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-focus)' }}>
+                    <Trophy size={13} color="var(--accent-gold)" />
+                    <span style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-gold)', fontWeight: 600 }}>
+                      {ex.pr}
+                    </span>
+                  </div>
+                </div>
 
-          {customExercises.length > 0 && (
-            <div style={{ marginTop: '20px' }}>
-              <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px' }}>
-                Custom Physical Records & Workouts ({customExercises.length})
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
-                {customExercises.map(ex => (
-                  <Link
-                    key={ex.id}
-                    href={`/node/${ex.slug || ex.id}`}
-                    style={{
-                      display: 'block',
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: 'var(--radius-sm)',
-                      padding: '18px 20px',
-                      textDecoration: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--accent-sage)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
-                        PHYSICAL CAPACITY
+                {/* Trajectory */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                  <TrendingUp size={14} color="var(--accent-sage)" />
+                  <span>Progression: </span>
+                  {ex.progression.map((step, sIdx) => (
+                    <React.Fragment key={sIdx}>
+                      <span style={{ color: sIdx === ex.progression.length - 1 ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+                        {step}
                       </span>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                        Level {ex.learningState} / 7
-                      </span>
-                    </div>
-                    <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#fff', margin: '6px 0' }}>
-                      {ex.title}
-                    </h4>
-                    <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
-                      {ex.summary}
-                    </p>
-                  </Link>
-                ))}
+                      {sIdx < ex.progression.length - 1 && <span>→</span>}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic', borderTop: '1px solid var(--border-faint)', paddingTop: '8px' }}>
+                  Note: {ex.notes}
+                </p>
               </div>
+            ))}
+          </div>
+        )}
+
+        {customExercises.length > 0 && (
+          <div style={{ marginTop: '20px' }}>
+            <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px' }}>
+              Custom Physical Records & Workouts ({customExercises.length})
             </div>
-          )}
-        </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+              {customExercises.map(ex => (
+                <Link
+                  key={ex.id}
+                  href={`/node/${ex.slug || ex.id}`}
+                  style={{
+                    display: 'block',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '18px 20px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--accent-sage)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+                      PHYSICAL CAPACITY
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                      Level {ex.learningState} / 7
+                    </span>
+                  </div>
+                  <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#fff', margin: '6px 0' }}>
+                    {ex.title}
+                  </h4>
+                  <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                    {ex.summary}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Add Exercise Modal */}

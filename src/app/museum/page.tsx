@@ -41,94 +41,7 @@ interface MuseumSpecimen {
   tags: string[];
 }
 
-const INITIAL_SPECIMENS: MuseumSpecimen[] = [
-  {
-    id: 'specimen-1',
-    accessionNo: 'NM-SPEC-081',
-    title: 'Custom Lisp Interpreter in Rust',
-    category: 'PROJECT',
-    status: 'ABANDONED',
-    dateInitiated: 'October 2024',
-    dateArchived: 'December 2024',
-    description: 'Attempted to build a pure tree-walking Lisp dialect from scratch with lexical scoping and tail-call optimization in Rust.',
-    autopsy: 'Hit borrow checker friction during macro expansion closures. Realized the mental energy was being consumed by Rust lifetime annotations rather than language design fundamentals.',
-    revivalPotential: 35,
-    lessonsLearned: [
-      'Build first prototype in TypeScript or Python before porting to systems language',
-      'Macro hygiene requires dedicated intermediate representation',
-      'Abandonment was the correct choice: saved 60 hours of compiler fighting'
-    ],
-    tags: ['Rust', 'Compilers', 'Lisp', 'AST']
-  },
-  {
-    id: 'specimen-2',
-    accessionNo: 'NM-SPEC-044',
-    title: 'Hyperbolic Geometry Poincaré Disk for Graph Layouts',
-    category: 'EXPERIMENT',
-    status: 'PAUSED',
-    dateInitiated: 'January 2025',
-    dateArchived: 'February 2025',
-    description: 'Experimenting with non-Euclidean hyperbolic space to compress millions of interconnected nodes without visual edge overlap.',
-    autopsy: 'Möbius transformations worked in 2D canvas, but coordinate projection into WebGL shaders introduced floating point jitter at disk boundary.',
-    revivalPotential: 82,
-    lessonsLearned: [
-      'Hyperbolic distance metrics work extraordinarily well for hierarchical trees',
-      'Need to precompute conformal coordinates rather than calculate every frame'
-    ],
-    tags: ['Non-Euclidean', 'Math', 'Poincaré', 'WebGL']
-  },
-  {
-    id: 'specimen-3',
-    accessionNo: 'NM-SPEC-019',
-    title: 'Finnegans Wake by James Joyce',
-    category: 'BOOK',
-    status: 'ABANDONED',
-    dateInitiated: 'August 2024',
-    dateArchived: 'September 2024',
-    description: 'Attempted uninterrupted cover-to-cover reading of Joyce’s multilingual polyglot masterpiece.',
-    autopsy: 'Reached page 142. Found that reading at 3 pages per hour with a secondary annotated lexicon disrupted intuitive aesthetic flow. Acknowledged as a museum curiosity rather than mandatory reading.',
-    revivalPotential: 15,
-    lessonsLearned: [
-      'Not all classic literature yields proportional return on attentional capital',
-      'Admitting defeat in a book is an act of intellectual liberation'
-    ],
-    tags: ['Modernism', 'Literature', 'James Joyce']
-  },
-  {
-    id: 'specimen-4',
-    accessionNo: 'NM-SPEC-092',
-    title: 'Chola Maritime Fleet GIS Interactive Map',
-    category: 'PROJECT',
-    status: 'PAUSED',
-    dateInitiated: 'November 2024',
-    dateArchived: 'January 2025',
-    description: 'An interactive historical timeline map rendering Monsoon wind currents and Rajendra Chola’s naval armada through the Malacca Strait.',
-    autopsy: 'Paused due to lack of high-resolution 11th-century bathymetric coastline shapefiles. Paused pending academic GIS data acquisition.',
-    revivalPotential: 90,
-    lessonsLearned: [
-      'Historical cartography requires scholarly vector data sources, not standard Google Maps tiles',
-      'Seasonal monsoon currents dictate naval routes with mathematical predictability'
-    ],
-    tags: ['Chola Dynasty', 'Maritime', 'Cartography', 'GIS']
-  },
-  {
-    id: 'specimen-5',
-    accessionNo: 'NM-SPEC-012',
-    title: 'Handstand Press Progression',
-    category: 'SKILL',
-    status: 'COMPLETED',
-    dateInitiated: 'March 2024',
-    dateArchived: 'November 2024',
-    description: 'Mastery of free-standing bent-arm to straight-arm handstand press from straddle position.',
-    autopsy: 'Successfully integrated into daily warmup. Required 8 months of scapular depression conditioning and hamstring compression flexibility.',
-    revivalPotential: 100,
-    lessonsLearned: [
-      'Frequency over intensity: 10 minutes every day beats 2 hours on Sunday',
-      'Shoulder mobility was the real bottleneck, not wrist strength'
-    ],
-    tags: ['Calisthenics', 'Biomechanics', 'Discipline']
-  }
-];
+const INITIAL_SPECIMENS: MuseumSpecimen[] = [];
 
 export default function MuseumPage() {
   const [specimens, setSpecimens] = useState<MuseumSpecimen[]>(INITIAL_SPECIMENS);
@@ -365,14 +278,33 @@ export default function MuseumPage() {
         ))}
       </div>
 
-      {/* Specimen Catalog Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-          gap: '20px'
-        }}
-      >
+      {/* Specimen Catalog Grid or Empty State */}
+      {filtered.length === 0 ? (
+        <div
+          style={{
+            padding: '60px 24px',
+            textAlign: 'center',
+            border: '1px dashed rgba(255, 255, 255, 0.1)',
+            borderRadius: '14px',
+            background: 'rgba(255, 255, 255, 0.015)'
+          }}
+        >
+          <Archive size={28} color="var(--accent-gold)" style={{ margin: '0 auto 12px auto' }} />
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: '#fff', marginBottom: '8px' }}>
+            No specimens in museum archive yet
+          </div>
+          <p style={{ color: '#8b8b99', fontSize: '0.88rem', maxWidth: '440px', margin: '0 auto' }}>
+            The Museum of Paused & Abandoned Endeavors preserves dead ends, paused hypotheses, and post-mortems for future revival.
+          </p>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gap: '20px'
+          }}
+        >
         {filtered.map((specimen) => {
           const badge = getStatusBadge(specimen.status);
           const BadgeIcon = badge.icon;
@@ -540,6 +472,7 @@ export default function MuseumPage() {
           );
         })}
       </div>
+      )}
 
       {/* Specimen Detail Modal */}
       <AnimatePresence>

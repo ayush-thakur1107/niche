@@ -26,15 +26,6 @@ export default function VocabularyPage() {
       .catch(() => {});
   }, []);
 
-  const dailyWord = {
-    word: 'Palimpsest',
-    pronunciation: '/ˈpalɪm(p)sɛst/',
-    etymology: 'From Greek palimpsēstos (palin "again" + psēn "to scrape")',
-    definition: 'A manuscript or surface on which earlier writing has been effaced to make room for later writing, yet traces of the original remain visible.',
-    mySentence: 'The city’s brick alleyways were a palimpsest of medieval stone, Victorian plaster, and modernist neon.',
-    whyCare: 'The quintessential metaphor for how human memory layers over itself without ever truly wiping clean the past.'
-  };
-
   return (
     <div className={styles.container}>
       <header className={styles.hero} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -74,40 +65,40 @@ export default function VocabularyPage() {
         </button>
       </header>
 
-      {/* Featured Word of the Day */}
-      <section className={styles.spotlightCard}>
-        <div style={{ width: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-gold)', textTransform: 'uppercase' }}>
-              Word In Focus
-            </span>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-              {dailyWord.pronunciation}
-            </span>
-          </div>
-
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', color: 'var(--text-primary)', fontWeight: 500 }}>
-            {dailyWord.word}
-          </div>
-
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '12px' }}>
-            {dailyWord.etymology}
-          </div>
-
-          <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '14px' }}>
-            {dailyWord.definition}
-          </p>
-
-          <div style={{ background: 'var(--bg-abyss)', padding: '12px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>
-              MY OWN USAGE & RESONANCE
+      {/* Featured Word (Only when words exist) */}
+      {vocabNodes.length > 0 && (
+        <section className={styles.spotlightCard}>
+          <div style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-gold)', textTransform: 'uppercase' }}>
+                Word In Focus
+              </span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                Level {vocabNodes[0].learningState} / 7
+              </span>
             </div>
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', color: 'var(--accent-gold)', fontStyle: 'italic' }}>
-              “{dailyWord.mySentence}”
+
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', color: 'var(--text-primary)', fontWeight: 500 }}>
+              {vocabNodes[0].title}
             </div>
+
+            <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '14px', marginTop: '8px' }}>
+              {vocabNodes[0].summary || 'Adopted word into personal lexicon.'}
+            </p>
+
+            {vocabNodes[0].whyCare && (
+              <div style={{ background: 'var(--bg-abyss)', padding: '12px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  USAGE & RESONANCE
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', color: 'var(--accent-gold)', fontStyle: 'italic' }}>
+                  “{vocabNodes[0].whyCare}”
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Adopted Words List */}
       <section>

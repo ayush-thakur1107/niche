@@ -73,13 +73,25 @@ export default function MePage() {
           </span>
         </div>
 
-        <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: 'var(--text-primary)', lineHeight: 1.3 }}>
-          You repeatedly connect: Maritime History × Astronomy × Absurdist Literature × Bespoke Tailoring × Combat Conditioning
-        </div>
-
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: '850px' }}>
-          Your universe clusters around the intersection of <strong>rigorous classical historical inquiry</strong>, <strong>lucid existential philosophy</strong>, <strong>structural aesthetic honesty</strong> (Brutalism & Sartorial balance), and <strong>uncompromising physical discipline</strong>. This is not a fixed label—it is an emerging pattern of your personal curiosity gravity.
-        </p>
+        {nodes.length > 0 ? (
+          <>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: 'var(--text-primary)', lineHeight: 1.3 }}>
+              Emerging intellectual gravity: {nodes.slice(0, 5).map(n => n.title).join(' × ')}
+            </div>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: '850px' }}>
+              Your universe currently clusters around {nodes.length} entities. This synthesis evolves organically as you forge connections across disciplines.
+            </p>
+          </>
+        ) : (
+          <>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--text-primary)', lineHeight: 1.3 }}>
+              Your Universe is a Pristine Blank Slate
+            </div>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: '850px' }}>
+              As you populate your Atlas with cinema, literature, ideas, physical disciplines, and roadmaps, your emergent intellectual niche and curiosity gravity will automatically synthesize here.
+            </p>
+          </>
+        )}
       </section>
 
       {/* Section 16: Personal Audio Layer (Spotify) */}
@@ -92,11 +104,28 @@ export default function MePage() {
           <span>Top Intellectual Hubs (Most Connected Nodes)</span>
         </div>
 
-        <div className={styles.nodesGrid}>
-          {hubs.map(node => (
-            <NodeCard key={node.id} node={node} />
-          ))}
-        </div>
+        {hubs.length > 0 ? (
+          <div className={styles.nodesGrid}>
+            {hubs.map(node => (
+              <NodeCard key={node.id} node={node} />
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              padding: '36px 20px',
+              textAlign: 'center',
+              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255, 255, 255, 0.015)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.8rem',
+              color: 'var(--text-muted)'
+            }}
+          >
+            No connected nodes recorded yet. Place and interconnect entities on the Atlas canvas.
+          </div>
+        )}
       </section>
 
       {/* Competence & Learning State Spectrum (Section 57) */}

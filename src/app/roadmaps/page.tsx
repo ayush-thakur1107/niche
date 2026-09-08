@@ -21,53 +21,21 @@ interface RoadmapItem {
   milestones: Milestone[];
 }
 
-const DEFAULT_ROADMAPS: RoadmapItem[] = [
-  {
-    id: 'rm-1',
-    title: 'Master Indian Ocean Maritime History & Classical India',
-    goal: 'Understand the economic, geopolitical, and nautical mechanisms connecting Ancient Tamil kingdoms to Southeast Asia.',
-    milestones: [
-      { id: 'rm-1-1', label: 'Read Ashokan inscriptions and Sangam literature references', done: true },
-      { id: 'rm-1-2', label: 'Map out Chola naval raid of 1025 CE on Srivijaya', done: true },
-      { id: 'rm-1-3', label: 'Study monsoon wind reversal windows and ship construction', done: false },
-      { id: 'rm-1-4', label: 'Synthesize paper on Indian Ocean merchant guilds', done: false }
-    ]
-  },
-  {
-    id: 'rm-2',
-    title: 'Physical Competence & Combat Conditioning',
-    goal: 'Achieve 20 kg strict hammer curls and fluid Muay Thai switch-kick combos.',
-    milestones: [
-      { id: 'rm-2-1', label: '12.5 kg to 15 kg hammer curl strict sets', done: true },
-      { id: 'rm-2-2', label: '17.5 kg strict sets achieved', done: true },
-      { id: 'rm-2-3', label: 'Clean lead teep and horizontal elbow slices', done: true },
-      { id: 'rm-2-4', label: '20 kg dumbbell strict hammer curls', done: false }
-    ]
-  },
-  {
-    id: 'rm-3',
-    title: 'Bespoke Tailoring & Sartorial Fluency',
-    goal: 'Develop the cultural fluency to recognize hand-stitched floating canvas, chest balance, and drape.',
-    milestones: [
-      { id: 'rm-3-1', label: 'Understand difference between fused and full canvas chests', done: true },
-      { id: 'rm-3-2', label: 'Recognize balance adjustments for forward-sloping shoulders', done: true },
-      { id: 'rm-3-3', label: 'Draft basic trouser pattern geometry', done: false }
-    ]
-  }
-];
+const DEFAULT_ROADMAPS: RoadmapItem[] = [];
 
 export default function RoadmapsPage() {
   const [skillNodes, setSkillNodes] = useState<NodeItem[]>([]);
-  const [roadmapsList, setRoadmapsList] = useState<RoadmapItem[]>(DEFAULT_ROADMAPS);
+  const [roadmapsList, setRoadmapsList] = useState<RoadmapItem[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Load persisted milestones from localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('niche:roadmaps:v1');
+      localStorage.removeItem('niche:roadmaps:v1');
+      const saved = localStorage.getItem('niche:roadmaps:v2');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           setRoadmapsList(parsed);
         }
       }
@@ -88,7 +56,7 @@ export default function RoadmapsPage() {
       });
 
       try {
-        localStorage.setItem('niche:roadmaps:v1', JSON.stringify(next));
+        localStorage.setItem('niche:roadmaps:v2', JSON.stringify(next));
       } catch (e) {
         console.warn('Could not persist roadmap state', e);
       }
@@ -259,6 +227,47 @@ export default function RoadmapsPage() {
           );
         })}
 
+        {roadmapsList.length === 0 && skillNodes.length === 0 && (
+          <div
+            style={{
+              padding: '60px 24px',
+              textAlign: 'center',
+              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255, 255, 255, 0.015)'
+            }}
+          >
+            <Milestone size={28} color="var(--accent-gold)" style={{ margin: '0 auto 12px auto' }} />
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: '#fff', marginBottom: '8px' }}>
+              No roadmaps or masteries created yet
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '440px', margin: '0 auto 20px auto' }}>
+              Maps of Becoming are visual trajectories of personal transformation. Set up a multi-phase mastery trajectory with interactive milestones.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 18px',
+                background: 'linear-gradient(135deg, #e2a857 0%, #c48b3c 100%)',
+                color: '#08080a',
+                border: 'none',
+                borderRadius: 'var(--radius-sm)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.78rem',
+                fontWeight: 650,
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={15} />
+              <span>Create Your First Roadmap</span>
+            </button>
+          </div>
+        )}
+
         {skillNodes.length > 0 && (
           <div style={{ marginTop: '16px' }}>
             <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px' }}>
@@ -307,6 +316,24 @@ export default function RoadmapsPage() {
         defaultTags={['roadmap', 'skill', 'mastery']}
         onNodeCreated={(newNode) => {
           setSkillNodes(prev => [newNode, ...prev]);
+          const newRoadmap: RoadmapItem = {
+            id: newNode.id,
+            title: newNode.title,
+            goal: newNode.summary || 'Trajectory towards mastery and skill acquisition',
+            milestones: [
+              { id: `${newNode.id}-m1`, label: `Phase 1: Foundational grammar and principles of ${newNode.title}`, done: false },
+              { id: `${newNode.id}-m2`, label: `Phase 2: Deliberate practice drills and pattern recognition`, done: false },
+              { id: `${newNode.id}-m3`, label: `Phase 3: High-pressure application and creative synthesis`, done: false },
+              { id: `${newNode.id}-m4`, label: `Phase 4: Autonomous mastery and intuition`, done: false }
+            ]
+          };
+          setRoadmapsList(prev => {
+            const next = [newRoadmap, ...prev];
+            try {
+              localStorage.setItem('niche:roadmaps:v2', JSON.stringify(next));
+            } catch (e) {}
+            return next;
+          });
         }}
       />
     </div>

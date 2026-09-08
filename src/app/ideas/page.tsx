@@ -19,32 +19,7 @@ interface EvolutionExample {
   whyChanged: string;
 }
 
-const EVOLUTIONS: EvolutionExample[] = [
-  {
-    topic: 'Consciousness & Meaning',
-    pastYear: '2023',
-    pastBelief: 'Meaning must be discovered or grounded in objective cosmological laws; without cosmic purpose, action is arbitrary.',
-    currentYear: '2026',
-    currentBelief: 'Meaning is fundamentally an aesthetic and moral act of defiance. One must imagine Sisyphus happy—revolt gives life value.',
-    whyChanged: 'Reading Albert Camus’s The Myth of Sisyphus and studying quantum indeterminacy.'
-  },
-  {
-    topic: 'Productivity vs Curiosity',
-    pastYear: '2024',
-    pastBelief: 'Every project must optimize towards immediate utility, SaaS metrics, or public demonstration to be justified.',
-    currentYear: '2026',
-    currentBelief: 'Curiosity is an autonomous sovereign pursuit. Deep tangential exploration (naval history, bespoke tailoring) compounds in unpredictable creative leaps.',
-    whyChanged: 'Realizing that my most original programming and philosophical insights came from unrelated disciplines.'
-  },
-  {
-    topic: 'Architecture & Form',
-    pastYear: '2022',
-    pastBelief: 'Architecture should maximize ornament, glass lightness, and sleek modern symmetry.',
-    currentYear: '2026',
-    currentBelief: 'Honesty of material takes precedence over cosmetic decoration. Brutalism’s exposed concrete acknowledges physical reality and structural truth.',
-    whyChanged: 'Visiting monumental civic concrete structures and studying materials science.'
-  }
-];
+const EVOLUTIONS: EvolutionExample[] = [];
 
 export default function IdeasPage() {
   const { setCursor, resetCursor } = useInteractionStore();
@@ -108,7 +83,8 @@ export default function IdeasPage() {
       </header>
 
       {/* "What I Used to Think" Interactive Evolution Timeline */}
-      <section
+      {EVOLUTIONS.length > 0 && activeEvo && (
+        <section
         style={{
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-subtle)',
@@ -199,6 +175,7 @@ export default function IdeasPage() {
           <strong style={{ color: 'var(--text-secondary)' }}>Catalyst for change: </strong> {activeEvo.whyChanged}
         </div>
       </section>
+      )}
 
       {/* Active Ideas Grid */}
       <section>
