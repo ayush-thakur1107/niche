@@ -151,8 +151,6 @@ export function PersistentMusicPlayer() {
       {/* 1. Persistent Bottom Bar */}
       <div
         className={styles.bar}
-        onMouseEnter={() => setCursor('PLAY')}
-        onMouseLeave={() => resetCursor()}
       >
         {/* Track Metadata / Click to Expand */}
         <div
