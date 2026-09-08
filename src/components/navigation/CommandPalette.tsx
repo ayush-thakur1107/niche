@@ -211,7 +211,7 @@ export function CommandPalette({
             <span>↵ to select</span>
             <span>esc to dismiss</span>
           </div>
-          <div>NICHE MAXING SEARCH</div>
+          <div>AYUSH THAKUR SEARCH</div>
         </div>
       </div>
     </div>

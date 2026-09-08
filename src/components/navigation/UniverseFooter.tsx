@@ -203,94 +203,75 @@ export function UniverseFooter() {
               color: '#8b8b99'
             }}
           >
-            NICHE MAXING · ayushthakur.space
+            AYUSH THAKUR · ayushthakur.space
           </div>
         </div>
 
-        {/* Portal Links Grid */}
+        {/* Command List (Railway Monospace Command Palette) */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '14px',
-            marginBottom: '40px'
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '10px',
+            marginBottom: '40px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '16px 0'
           }}
         >
-          {exploreActions.map((item) => {
-            const Icon = item.icon;
-            return (
-              <motion.button
-                key={item.id}
-                whileHover={{ y: -4, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={item.onClick}
-                onMouseEnter={() => {
-                  setHoveredColor(item.color);
-                  setCursor('EXPLORE', item.type);
-                }}
-                onMouseLeave={() => {
-                  setHoveredColor(null);
-                  resetCursor();
-                }}
+          {exploreActions.map((item) => (
+            <button
+              key={item.id}
+              onClick={item.onClick}
+              onMouseEnter={() => {
+                setHoveredColor(item.color);
+                setCursor('EXPLORE', item.type);
+              }}
+              onMouseLeave={() => {
+                setHoveredColor(null);
+                resetCursor();
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 14px',
+                background: 'transparent',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#e4e4eb',
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: '0.74rem',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                transition: 'all 0.15s ease',
+                outline: 'none'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.borderColor = item.color;
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#e4e4eb';
+              }}
+            >
+              <span
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  padding: '16px 18px',
-                  borderRadius: '12px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  color: '#ffffff',
-                  transition: 'border-color 0.2s ease, background 0.2s ease'
+                  width: '5px',
+                  height: '5px',
+                  borderRadius: '50%',
+                  backgroundColor: item.color,
+                  boxShadow: `0 0 6px ${item.color}88`,
+                  flexShrink: 0
                 }}
-              >
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '8px',
-                    background: `${item.color}18`,
-                    border: `1px solid ${item.color}40`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '10px'
-                  }}
-                >
-                  <Icon size={16} color={item.color} />
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.68rem',
-                    color: item.color,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    fontWeight: 650,
-                    marginBottom: '2px'
-                  }}
-                >
-                  {item.type}
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                    color: '#f0f0f5',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    width: '100%',
-                    justifyContent: 'space-between'
-                  }}
-                >
-                  <span>{item.label}</span>
-                  <ArrowUpRight size={13} color="#8b8b99" />
-                </div>
-              </motion.button>
-            );
-          })}
+              />
+              <span style={{ color: 'var(--text-faint, #525360)' }}>[{item.type}]</span>
+              <span style={{ fontWeight: 400 }}>{item.label}</span>
+              <ArrowUpRight size={12} style={{ color: 'var(--text-faint, #525360)', marginLeft: '2px' }} />
+            </button>
+          ))}
         </div>
 
         {/* Footer bottom bar */}

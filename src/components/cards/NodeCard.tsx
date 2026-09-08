@@ -8,6 +8,7 @@ import styles from './NodeCard.module.css';
 
 interface NodeCardProps {
   node: NodeItem;
+  isFeatured?: boolean;
   className?: string;
 }
 
@@ -43,7 +44,7 @@ const STATUS_CONFIG: Record<UncertaintyLevel, { label: string; color: string }> 
   question: { label: 'Question', color: '#56b6c2' }
 };
 
-export function NodeCard({ node, className }: NodeCardProps) {
+export function NodeCard({ node, isFeatured = false, className }: NodeCardProps) {
   const accentColor = TYPE_ACCENTS[node.type] || '#e2a857';
   const statusInfo = STATUS_CONFIG[node.uncertaintyLevel] || {
     label: (node.uncertaintyLevel || '').replace('_', ' '),
@@ -53,17 +54,17 @@ export function NodeCard({ node, className }: NodeCardProps) {
   return (
     <Link
       href={`/node/${node.slug || node.id}`}
-      className={`${styles.card} ${className || ''}`}
+      className={`${styles.card} ${isFeatured ? styles.cardFeatured : ''} ${className || ''}`}
       data-node-card="true"
     >
-      {/* Left-edge archival type mark */}
+      {/* Left-edge archival type line - sole container cue */}
       <div
         className={styles.typeBar}
         style={{ backgroundColor: accentColor }}
         aria-hidden="true"
       />
 
-      {/* Top Meta Eyebrow & Competence Level */}
+      {/* Header: Monospace Eyebrow & Instrument-Panel Level */}
       <div className={styles.header}>
         <span
           className={styles.eyebrow}
@@ -82,21 +83,21 @@ export function NodeCard({ node, className }: NodeCardProps) {
       {/* Editorial Title */}
       <h3 className={styles.title}>{node.title}</h3>
 
-      {/* Body / Summary with relaxed breathing room */}
+      {/* Body / Summary */}
       {node.summary && <p className={styles.summary}>{node.summary}</p>}
 
-      {/* Archival Status & Exploration Link */}
+      {/* Footer: Quiet Status Indicator & Monospace Navigation */}
       <div className={styles.footer}>
         <div className={styles.statusIndicator}>
           <span
             className={styles.statusDot}
-            style={{ backgroundColor: statusInfo.color, boxShadow: `0 0 6px ${statusInfo.color}66` }}
+            style={{ backgroundColor: statusInfo.color }}
           />
           <span className={styles.statusText}>{statusInfo.label}</span>
         </div>
 
-        <div className={styles.exploreArrow}>
-          <ArrowRight size={13} className={styles.arrowIcon} />
+        <div className={styles.exploreTrigger}>
+          <ArrowRight size={12} className={styles.arrowIcon} />
         </div>
       </div>
     </Link>

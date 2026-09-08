@@ -19,8 +19,11 @@ import {
   Search,
   Sparkles,
   Atom,
-  Archive
+  Archive,
+  Music2,
+  ExternalLink
 } from 'lucide-react';
+import { useInteractionStore } from '@/interaction/store';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
@@ -30,6 +33,7 @@ interface SidebarProps {
 
 export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps) {
   const pathname = usePathname();
+  const { setPlayerExpanded } = useInteractionStore();
   const [stats, setStats] = useState<{ totalNodes: number; inboxCount: number }>({
     totalNodes: 0,
     inboxCount: 0
@@ -69,10 +73,7 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
-        <div className={styles.logoText}>
-          NICHE MAXING
-          <span className={styles.logoBadge}>PRO</span>
-        </div>
+        <div className={styles.logoText}>Ayush Thakur</div>
         <div className={styles.domainTag}>ayushthakur.space</div>
       </div>
 
@@ -136,6 +137,64 @@ export function Sidebar({ onOpenCreateNode, onOpenCommandPalette }: SidebarProps
             </Link>
           );
         })}
+
+        <div className={styles.sectionLabel}>Audio & Atmosphere</div>
+        <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
+          <Link
+            href="/spotify"
+            className={`${styles.navItem} ${pathname === '/spotify' ? styles.navItemActive : ''}`}
+            style={{
+              flex: 1,
+              background: pathname === '/spotify' ? 'rgba(29, 185, 84, 0.2)' : 'rgba(29, 185, 84, 0.08)',
+              border: '1px solid rgba(29, 185, 84, 0.28)',
+              padding: '8px 10px',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              textDecoration: 'none'
+            }}
+            title="Open Spotify Sanctuary"
+          >
+            <div className={styles.itemContent} style={{ color: '#1ed760' }}>
+              <Music2 size={15} color="#1ed760" />
+              <span style={{ fontWeight: 600, fontFamily: 'var(--font-mono)', fontSize: '0.76rem' }}>
+                Spotify Sanctuary
+              </span>
+            </div>
+            <span
+              style={{
+                fontSize: '0.58rem',
+                fontFamily: 'var(--font-mono)',
+                background: 'rgba(29, 185, 84, 0.2)',
+                color: '#1ed760',
+                padding: '1px 5px',
+                borderRadius: '2px',
+                border: '1px solid rgba(29, 185, 84, 0.35)'
+              }}
+            >
+              ACCESS
+            </span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setPlayerExpanded(true)}
+            style={{
+              background: 'rgba(29, 185, 84, 0.08)',
+              border: '1px solid rgba(29, 185, 84, 0.25)',
+              borderRadius: '4px',
+              padding: '0 8px',
+              color: '#1ed760',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title="Open Quick Player Overlay"
+          >
+            <ExternalLink size={13} />
+          </button>
+        </div>
       </nav>
 
       <div className={styles.footerActions}>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Sidebar } from './Sidebar';
@@ -16,6 +16,7 @@ import styles from '@/app/layout.module.css';
 
 export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState(false);
   const [isCreateNodeOpen, setIsCreateNodeOpen] = useState(false);
@@ -111,6 +112,12 @@ export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
         <CreateNodeModal
           isOpen={isCreateNodeOpen}
           onClose={() => setIsCreateNodeOpen(false)}
+          onNodeCreated={(node) => {
+            setIsCreateNodeOpen(false);
+            if (pathname !== '/atlas') {
+              router.push(`/node/${node.slug || node.id}`);
+            }
+          }}
         />
       </div>
     </LenisProvider>

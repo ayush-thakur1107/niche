@@ -30,12 +30,18 @@ export const CustomNode = memo(({ data, selected }: NodeProps) => {
 
   return (
     <div className={`${styles.nodeCard} ${selected ? styles.nodeCardSelected : ''}`}>
-      {/* Top connect handle */}
+      {/* Top & Left connect handles */}
       <Handle
         type="target"
         position={Position.Top}
         className={styles.customHandle}
         id="top"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className={styles.customHandle}
+        id="left"
       />
 
       <div className={styles.typeHeader}>
@@ -78,7 +84,13 @@ export const CustomNode = memo(({ data, selected }: NodeProps) => {
         )}
       </div>
 
-      {/* Bottom connect handle */}
+      {/* Bottom & Right connect handles */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        className={styles.customHandle}
+        id="right"
+      />
       <Handle
         type="source"
         position={Position.Bottom}

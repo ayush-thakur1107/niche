@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import styles from './StatsLedger.module.css';
 
 interface StatsLedgerProps {
@@ -25,72 +24,93 @@ export function StatsLedger({
   const numRef3 = useRef<HTMLDivElement>(null);
   const numRef4 = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      const targets = [
-        { el: numRef1.current, val: totalNodes },
-        { el: numRef2.current, val: totalConnections },
-        { el: numRef3.current, val: distinctDisciplines },
-        { el: numRef4.current, val: totalSources }
-      ];
+  const [hasTriggered, setHasTriggered] = useState(false);
 
-      targets.forEach((target, idx) => {
-        if (!target.el) return;
-        const obj = { count: 0 };
-        gsap.to(obj, {
-          count: target.val,
-          duration: 1.2,
-          ease: 'power2.out',
-          delay: 0.1 + idx * 0.08,
-          onUpdate: () => {
-            if (target.el) {
-              target.el.textContent = Math.round(obj.count).toLocaleString();
-            }
+  // Scroll-into-view trigger
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setHasTriggered(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // GSAP mechanical count-up animation on scroll-into-view
+  useEffect(() => {
+    if (!hasTriggered) return;
+
+    const targets = [
+      { el: numRef1.current, val: totalNodes },
+      { el: numRef2.current, val: totalConnections },
+      { el: numRef3.current, val: distinctDisciplines },
+      { el: numRef4.current, val: totalSources }
+    ];
+
+    targets.forEach((target, idx) => {
+      if (!target.el) return;
+      const obj = { count: 0 };
+      gsap.to(obj, {
+        count: target.val,
+        duration: 1.3,
+        ease: 'power2.out',
+        delay: idx * 0.08,
+        onUpdate: () => {
+          if (target.el) {
+            target.el.textContent = Math.round(obj.count).toLocaleString();
           }
-        });
+        }
       });
-    },
-    { scope: containerRef, dependencies: [totalNodes, totalConnections, distinctDisciplines, totalSources] }
-  );
+    });
+  }, [hasTriggered, totalNodes, totalConnections, distinctDisciplines, totalSources]);
 
   return (
     <div ref={containerRef} className={styles.ledgerStrip}>
       <div className={styles.ledgerCell}>
-        <div className={styles.cellIndex}>01 / NODES</div>
+        <div className={styles.cellIndex}>01 // NODES</div>
         <div ref={numRef1} className={styles.cellNumber}>
-          {totalNodes}
+          {hasTriggered ? totalNodes : 0}
         </div>
-        <div className={styles.cellLabel}>Total Universe Entities</div>
+        <div className={styles.cellLabel}>Entities Indexed</div>
       </div>
 
       <div className={styles.ledgerDivider} />
 
       <div className={styles.ledgerCell}>
-        <div className={styles.cellIndex}>02 / CONNECTIONS</div>
+        <div className={styles.cellIndex}>02 // SYNAPSES</div>
         <div ref={numRef2} className={styles.cellNumber}>
-          {totalConnections}
+          {hasTriggered ? totalConnections : 0}
         </div>
-        <div className={styles.cellLabel}>Established Synapses</div>
+        <div className={styles.cellLabel}>Active Relationships</div>
       </div>
 
       <div className={styles.ledgerDivider} />
 
       <div className={styles.ledgerCell}>
-        <div className={styles.cellIndex}>03 / DISCIPLINES</div>
+        <div className={styles.cellIndex}>03 // DOMAINS</div>
         <div ref={numRef3} className={styles.cellNumber}>
-          {distinctDisciplines}
+          {hasTriggered ? distinctDisciplines : 0}
         </div>
-        <div className={styles.cellLabel}>Knowledge Domains</div>
+        <div className={styles.cellLabel}>Disciplines Mapped</div>
       </div>
 
       <div className={styles.ledgerDivider} />
 
       <div className={styles.ledgerCell}>
-        <div className={styles.cellIndex}>04 / CITATIONS</div>
+        <div className={styles.cellIndex}>04 // PROVENANCE</div>
         <div ref={numRef4} className={styles.cellNumber}>
-          {totalSources}
+          {hasTriggered ? totalSources : 0}
         </div>
-        <div className={styles.cellLabel}>Verified Provenance Sources</div>
+        <div className={styles.cellLabel}>Citations & Sources</div>
       </div>
     </div>
   );

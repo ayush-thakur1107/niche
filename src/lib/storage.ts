@@ -21,6 +21,7 @@ interface DatabaseSchema {
   sources: SourceItem[];
   inbox: InboxItem[];
   events: TimelineEvent[];
+  initialized?: boolean;
 }
 
 const DATA_DIR = path.join(process.cwd(), '.data');
@@ -34,7 +35,7 @@ function ensureDirectoryExistence(filePath: string) {
 }
 
 function getInitialDatabase(): DatabaseSchema {
-  return getSeedDatabase();
+  return { ...getSeedDatabase(), initialized: true };
 }
 
 export function readDatabase(): DatabaseSchema {
@@ -46,16 +47,44 @@ export function readDatabase(): DatabaseSchema {
     }
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
-    if (!parsed.nodes || parsed.nodes.length === 0) {
+    // If never initialized and empty, seed it; otherwise respect current state (including cleared/empty)
+    if (!parsed.initialized && (!parsed.nodes || parsed.nodes.length === 0)) {
       const initial = getInitialDatabase();
       writeDatabase(initial);
       return initial;
     }
-    return parsed;
+    return {
+      nodes: parsed.nodes || [],
+      contents: parsed.contents || [],
+      connections: parsed.connections || [],
+      positions: parsed.positions || {},
+      sources: parsed.sources || [],
+      inbox: parsed.inbox || [],
+      events: parsed.events || [],
+      initialized: parsed.initialized ?? true
+    };
   } catch (error) {
     console.error('Failed to read universe database:', error);
     return getInitialDatabase();
   }
+}
+
+export function clearAllNodesAndConnections(): void {
+  const current = readDatabase();
+  const cleared: DatabaseSchema = {
+    ...current,
+    nodes: [],
+    contents: [],
+    connections: [],
+    positions: {},
+    initialized: true
+  };
+  writeDatabase(cleared);
+}
+
+export function restoreSeedDatabase(): void {
+  const initial = getInitialDatabase();
+  writeDatabase(initial);
 }
 
 export function writeDatabase(data: DatabaseSchema): void {
@@ -420,12 +449,12 @@ export function getUniverseStats() {
   });
 
   return {
-    totalNodes: db.nodes.length,
-    totalConnections: db.connections.length,
-    totalSources: db.sources.length,
-    inboxCount: db.inbox.filter(i => i.status === 'pending').length,
+    totalNodes: (db.nodes || []).length,
+    totalConnections: (db.connections || []).length,
+    totalSources: (db.sources || []).length,
+    inboxCount: (db.inbox || []).filter(i => i.status === 'pending').length,
     typeCounts,
     learningStates,
-    recentEvents: db.events.slice(0, 10)
+    recentEvents: (db.events || []).slice(0, 10)
   };
 }

@@ -101,11 +101,19 @@ export function CreateNodeModal({ isOpen, onClose, onNodeCreated }: CreateNodeMo
         }
       }
 
+      // Dispatch global event for live canvas updates
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('universe:nodeCreated', { detail: node }));
+      }
+
       if (onNodeCreated) {
         onNodeCreated(node);
+      } else if (typeof window !== 'undefined' && window.location.pathname === '/atlas') {
+        // Stay on canvas without redirect
+      } else {
+        router.push(`/node/${node.slug || node.id}`);
       }
       onClose();
-      router.push(`/node/${node.slug || node.id}`);
     } catch (err) {
       console.error('Node creation error:', err);
     } finally {
@@ -263,7 +271,7 @@ export function CreateNodeModal({ isOpen, onClose, onNodeCreated }: CreateNodeMo
               }}
             >
               <Sparkles size={14} />
-              <span>{loading ? 'Manifesting...' : 'Create Node & Open'}</span>
+              <span>{loading ? 'Manifesting...' : onNodeCreated ? 'Add to Canvas' : 'Create Node & Open'}</span>
             </button>
           </div>
         </form>

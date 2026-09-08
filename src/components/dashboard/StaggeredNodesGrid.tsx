@@ -23,14 +23,14 @@ export function StaggeredNodesGrid({ nodes }: StaggeredNodesGridProps) {
         cards,
         {
           opacity: 0,
-          y: 20
+          y: 16
         },
         {
           opacity: 1,
           y: 0,
-          duration: 0.65,
-          stagger: 0.05, // 50ms stagger per brief
-          ease: 'power3.out',
+          duration: 0.55,
+          stagger: 0.04,
+          ease: 'power2.out',
           clearProps: 'opacity,visibility'
         }
       );
@@ -38,10 +38,23 @@ export function StaggeredNodesGrid({ nodes }: StaggeredNodesGridProps) {
     { scope: containerRef, dependencies: [nodes] }
   );
 
+  const getColSpanClass = (index: number) => {
+    if (index === 0) return styles.colSpan8;
+    if (index === 1) return styles.colSpan4;
+    if (index >= 2 && index <= 4) return styles.colSpan4;
+    if (index >= 5 && index <= 6) return styles.colSpan6;
+    return styles.colSpan4;
+  };
+
   return (
     <div ref={containerRef} className={styles.grid}>
-      {nodes.map((node) => (
-        <NodeCard key={node.id} node={node} />
+      {nodes.map((node, index) => (
+        <NodeCard
+          key={node.id}
+          node={node}
+          isFeatured={index === 0}
+          className={getColSpanClass(index)}
+        />
       ))}
     </div>
   );

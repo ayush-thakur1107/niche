@@ -21,6 +21,8 @@ import '@xyflow/react/dist/style.css';
 import { CustomNode } from './CustomNode';
 import { InspectorDrawer } from './InspectorDrawer';
 import { ConnectionModal } from './ConnectionModal';
+import { CreateNodeModal } from '@/components/common/CreateNodeModal';
+import { useInteractionStore } from '@/interaction/store';
 import { NodeItem, ConnectionItem } from '@/lib/types';
 import {
   Maximize2,
@@ -28,7 +30,9 @@ import {
   Layers,
   Filter,
   RefreshCw,
-  Plus
+  Plus,
+  Trash2,
+  Music2
 } from 'lucide-react';
 import styles from './AtlasCanvas.module.css';
 
@@ -44,6 +48,8 @@ interface AtlasCanvasProps {
 
 export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
   const router = useRouter();
+  const { setPlayerExpanded } = useInteractionStore();
+
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [rawNodes, setRawNodes] = useState<NodeItem[]>([]);
@@ -56,6 +62,9 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
 
   // Selected Node for Inspector
   const [selectedNode, setSelectedNode] = useState<NodeItem | null>(null);
+
+  // Add Node Modal state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Connection Drag-to-Create Modal
   const [pendingConnection, setPendingConnection] = useState<{
@@ -92,30 +101,46 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
           }
         }));
 
-        // Convert to React Flow Edges
-        const flowEdges: Edge[] = data.connections.map((c: ConnectionItem) => ({
-          id: c.id,
-          source: c.sourceNodeId,
-          target: c.targetNodeId,
-          label: c.label || c.relationshipType,
-          animated: c.relationshipType === 'caused' || c.relationshipType === 'inspired',
-          style: {
-            stroke: c.strength && c.strength >= 4 ? '#e2a857' : 'rgba(255, 255, 255, 0.25)',
-            strokeWidth: c.strength ? c.strength * 0.75 : 1.5,
-          },
-          labelStyle: {
-            fill: '#a3a4af',
-            fontSize: 10,
-            fontFamily: 'var(--font-mono)'
-          },
-          labelBgStyle: {
-            fill: '#121216',
-            fillOpacity: 0.85
-          }
-        }));
+        // Convert to React Flow Edges with high-contrast monospace matte badges
+        const flowEdges: Edge[] = data.connections.map((c: ConnectionItem) => {
+          const rawLabel = c.label || c.relationshipType || '';
+          const displayLabel = rawLabel.replace(/_/g, ' ').toUpperCase();
+          return {
+            id: c.id,
+            source: c.sourceNodeId,
+            target: c.targetNodeId,
+            label: displayLabel,
+            animated: c.relationshipType === 'caused' || c.relationshipType === 'inspired',
+            style: {
+              stroke: c.strength && c.strength >= 4 ? '#e2a857' : 'rgba(255, 255, 255, 0.28)',
+              strokeWidth: c.strength ? Math.max(1.5, c.strength * 0.75) : 1.5,
+            },
+            labelStyle: {
+              fill: '#f2f2f5',
+              fontSize: 9,
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 500,
+              letterSpacing: '0.12em'
+            },
+            labelBgStyle: {
+              fill: '#08080c',
+              fillOpacity: 0.96,
+              stroke: 'rgba(255, 255, 255, 0.16)',
+              strokeWidth: 1,
+              rx: 0,
+              ry: 0
+            },
+            labelBgPadding: [6, 4] as [number, number],
+          };
+        });
 
         setNodes(flowNodes);
         setEdges(flowEdges);
+      } else {
+        setNodes([]);
+        setEdges([]);
+        setRawNodes([]);
+        setRawConnections([]);
       }
     } catch (err) {
       console.error('Failed to load graph:', err);
@@ -128,158 +153,205 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
     loadGraph();
   }, [loadGraph]);
 
-  // Handle position changes and save debounced
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      setNodes(nds => {
-        const updated = applyNodeChanges(changes, nds);
-        // If drag ended, persist new positions
-        const positionChanges = changes.filter(
-          c => c.type === 'position' && (c as any).dragging === false
-        );
-
-        if (positionChanges.length > 0) {
-          const positionsToSave = updated.map(n => ({
-            nodeId: n.id,
-            x: n.position.x,
-            y: n.position.y
-          }));
-
-          fetch('/api/graph', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ positions: positionsToSave })
-          }).catch(err => console.error('Failed to save node positions:', err));
-        }
-
-        return updated;
-      });
-    },
-    []
-  );
-
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
-    []
-  );
-
-  // Handle new connection dropped
-  const onConnect = useCallback(
-    (params: Connection) => {
-      if (!params.source || !params.target) return;
-      const sourceNode = rawNodes.find(n => n.id === params.source);
-      const targetNode = rawNodes.find(n => n.id === params.target);
-
-      if (sourceNode && targetNode) {
-        setPendingConnection({
-          source: { id: sourceNode.id, title: sourceNode.title },
-          target: { id: targetNode.id, title: targetNode.title }
-        });
-      }
-    },
-    [rawNodes]
-  );
-
-  // Click on node opens inspector
-  const onNodeClick = useCallback(
-    (_: React.MouseEvent, node: Node) => {
-      const fullNode = rawNodes.find(n => n.id === node.id);
-      if (fullNode) {
-        setSelectedNode(fullNode);
-      }
-    },
-    [rawNodes]
-  );
-
-  // Double click navigates to full page
-  const onNodeDoubleClick = useCallback(
-    (_: React.MouseEvent, node: Node) => {
-      const fullNode = rawNodes.find(n => n.id === node.id);
-      if (fullNode) {
-        router.push(`/node/${fullNode.slug || fullNode.id}`);
-      }
-    },
-    [rawNodes, router]
-  );
-
-  // Delete node handler
-  const handleDeleteNode = async (nodeId: string) => {
-    try {
-      await fetch(`/api/nodes/${nodeId}`, { method: 'DELETE' });
+  useEffect(() => {
+    const handleNodeCreated = (e: any) => {
       loadGraph();
-      if (selectedNode?.id === nodeId) {
-        setSelectedNode(null);
+      if (e?.detail) {
+        setSelectedNode(e.detail);
       }
-    } catch (err) {
-      console.error('Delete error:', err);
+    };
+    window.addEventListener('universe:nodeCreated', handleNodeCreated);
+    return () => window.removeEventListener('universe:nodeCreated', handleNodeCreated);
+  }, [loadGraph]);
+
+  // Handle Clear Canvas
+  const handleClearCanvas = async () => {
+    if (window.confirm('Clear all entities and connections from the canvas? You can restore demo nodes anytime.')) {
+      try {
+        setLoading(true);
+        await fetch('/api/graph', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'clear' })
+        });
+        setNodes([]);
+        setEdges([]);
+        setRawNodes([]);
+        setRawConnections([]);
+        setSelectedNode(null);
+      } catch (err) {
+        console.error('Failed to clear canvas:', err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  // Re-cluster nodes when mode is 'clusters'
-  const applyClusterLayout = () => {
-    setMapMode('clusters');
-    const typeGroups: Record<string, Node[]> = {};
-    nodes.forEach(n => {
-      const t = n.data.type as string;
-      if (!typeGroups[t]) typeGroups[t] = [];
-      typeGroups[t].push(n);
-    });
-
-    const groupKeys = Object.keys(typeGroups);
-    const radius = 350;
-    const newNodes = nodes.map(n => {
-      const t = n.data.type as string;
-      const groupIdx = groupKeys.indexOf(t);
-      const angle = (groupIdx / groupKeys.length) * 2 * Math.PI;
-      const cx = Math.cos(angle) * radius;
-      const cy = Math.sin(angle) * radius;
-
-      const itemsInGroup = typeGroups[t];
-      const itemIdx = itemsInGroup.findIndex(item => item.id === n.id);
-      const subAngle = (itemIdx / itemsInGroup.length) * 2 * Math.PI;
-      const subRadius = 70 + itemIdx * 30;
-
-      return {
-        ...n,
-        position: {
-          x: cx + Math.cos(subAngle) * subRadius,
-          y: cy + Math.sin(subAngle) * subRadius
-        }
-      };
-    });
-
-    setNodes(newNodes);
+  // Handle Restore Seed Demo
+  const handleRestoreSeed = async () => {
+    try {
+      setLoading(true);
+      await fetch('/api/graph', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'restore_seed' })
+      });
+      await loadGraph();
+    } catch (err) {
+      console.error('Failed to restore demo:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Filtered nodes
+  const handleOpenAddNode = () => {
+    if (onOpenCreateNode) {
+      onOpenCreateNode();
+    } else {
+      setIsCreateModalOpen(true);
+    }
+  };
+
+  // Nodes & Edges change callbacks
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  );
+
+  // Drag handle-to-handle connection
+  const onConnect = useCallback((params: Connection) => {
+    if (!params.source || !params.target) return;
+    const sourceNode = rawNodes.find((n) => n.id === params.source);
+    const targetNode = rawNodes.find((n) => n.id === params.target);
+    if (sourceNode && targetNode) {
+      setPendingConnection({
+        source: { id: sourceNode.id, title: sourceNode.title },
+        target: { id: targetNode.id, title: targetNode.title },
+      });
+    }
+  }, [rawNodes]);
+
+  // Node selection & click
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    const found = rawNodes.find((n) => n.id === node.id);
+    if (found) setSelectedNode(found);
+  }, [rawNodes]);
+
+  // Double click node to navigate to deep detail page
+  const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
+    const found = rawNodes.find((n) => n.id === node.id);
+    if (found) {
+      router.push(`/node/${found.slug || found.id}`);
+    }
+  }, [rawNodes, router]);
+
+  // Handle node delete from inspector
+  const handleDeleteNode = useCallback(async (nodeId: string) => {
+    try {
+      await fetch(`/api/nodes/${nodeId}`, { method: 'DELETE' });
+      setSelectedNode(null);
+      loadGraph();
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
+  }, [loadGraph]);
+
+  // Persist dragged position
+  const onNodeDragStop = useCallback((_: any, node: Node) => {
+    fetch('/api/graph', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        positions: [{ nodeId: node.id, x: node.position.x, y: node.position.y }]
+      })
+    }).catch((err) => console.error('Failed to save position:', err));
+  }, []);
+
+  // Switch to Constellation mode
+  const applyConstellationLayout = () => {
+    setMapMode('constellation');
+    const radius = 380;
+    const center = { x: 450, y: 350 };
+    setNodes((currentNodes) =>
+      currentNodes.map((n, i) => {
+        const angle = (i / currentNodes.length) * 2 * Math.PI;
+        return {
+          ...n,
+          position: {
+            x: center.x + radius * Math.cos(angle) + (Math.random() * 80 - 40),
+            y: center.y + radius * Math.sin(angle) + (Math.random() * 80 - 40)
+          }
+        };
+      })
+    );
+  };
+
+  // Switch to Cluster mode
+  const applyClusterLayout = () => {
+    setMapMode('clusters');
+    const typeClusters: Record<string, { x: number; y: number }> = {
+      EMPIRE: { x: 100, y: 120 },
+      PERSON: { x: 600, y: 120 },
+      PHILOSOPHY: { x: 100, y: 580 },
+      CONCEPT: { x: 600, y: 580 },
+      BOOK: { x: 350, y: 350 }
+    };
+    const counts: Record<string, number> = {};
+
+    setNodes((currentNodes) =>
+      currentNodes.map((n) => {
+        const t = String(n.data?.type || 'CONCEPT');
+        const base = typeClusters[t] || { x: 350, y: 350 };
+        const idx = counts[t] || 0;
+        counts[t] = idx + 1;
+        const offsetX = (idx % 3) * 160 + (Math.random() * 30 - 15);
+        const offsetY = Math.floor(idx / 3) * 130 + (Math.random() * 30 - 15);
+
+        return {
+          ...n,
+          position: { x: base.x + offsetX, y: base.y + offsetY }
+        };
+      })
+    );
+  };
+
+  // Switch to Freeform mode
+  const applyFreeformLayout = () => {
+    setMapMode('freeform');
+    loadGraph();
+  };
+
+  // Filtered visible nodes
   const visibleNodes = useMemo(() => {
     if (typeFilter === 'ALL') return nodes;
-    return nodes.filter(n => n.data.type === typeFilter);
+    return nodes.filter((n) => n.data?.type === typeFilter);
   }, [nodes, typeFilter]);
 
+  // Unique types present
   const uniqueTypes = useMemo(() => {
-    const set = new Set(rawNodes.map(n => n.type));
-    return Array.from(set);
+    const types = new Set<string>();
+    rawNodes.forEach((n) => types.add(n.type));
+    return Array.from(types);
   }, [rawNodes]);
 
   return (
-    <div
-      className={`${styles.canvasWrapper} ${
-        mapMode === 'constellation' ? styles.constellationBg : ''
-      }`}
-    >
-      {/* Floating HUD Toolbar */}
+    <div className={`${styles.canvasWrapper} ${mapMode === 'constellation' ? styles.constellationBg : ''}`}>
+      {/* Railway HUD Toolbar */}
       <div className={styles.hudToolbar}>
         <button
           className={`${styles.hudBtn} ${mapMode === 'freeform' ? styles.hudBtnActive : ''}`}
-          onClick={() => setMapMode('freeform')}
+          onClick={applyFreeformLayout}
         >
           <span>Freeform</span>
         </button>
 
         <button
           className={`${styles.hudBtn} ${mapMode === 'constellation' ? styles.hudBtnActive : ''}`}
-          onClick={() => setMapMode('constellation')}
+          onClick={applyConstellationLayout}
         >
           <Sparkles size={13} />
           <span>Constellation</span>
@@ -300,10 +372,10 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
           <select
             className={styles.hudSelect}
             value={typeFilter}
-            onChange={e => setTypeFilter(e.target.value)}
+            onChange={(e) => setTypeFilter(e.target.value)}
           >
             <option value="ALL">All Types ({rawNodes.length})</option>
-            {uniqueTypes.map(t => (
+            {uniqueTypes.map((t) => (
               <option key={t} value={t}>
                 {t}
               </option>
@@ -311,16 +383,50 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
           </select>
         </div>
 
-        {onOpenCreateNode && (
-          <button
-            className={styles.hudBtn}
-            onClick={onOpenCreateNode}
-            style={{ color: 'var(--accent-gold)' }}
-          >
-            <Plus size={13} />
-            <span>Add Node</span>
-          </button>
-        )}
+        <div style={{ width: '1px', height: '16px', background: 'var(--border-subtle)' }} />
+
+        {/* Functional Add Node Button */}
+        <button
+          className={styles.hudBtn}
+          onClick={handleOpenAddNode}
+          style={{ color: 'var(--accent-gold)', borderColor: 'rgba(226, 168, 87, 0.4)' }}
+          title="Add a new entity to this canvas"
+        >
+          <Plus size={13} />
+          <span>Add Node</span>
+        </button>
+
+        {/* Clear Canvas Button */}
+        <button
+          className={styles.hudBtn}
+          onClick={handleClearCanvas}
+          style={{ color: '#e06c75' }}
+          title="Clear all entities and start fresh"
+        >
+          <Trash2 size={12} />
+          <span>Clear</span>
+        </button>
+
+        {/* Restore Sample Demo */}
+        <button
+          className={styles.hudBtn}
+          onClick={handleRestoreSeed}
+          title="Restore sample demo entities"
+        >
+          <Sparkles size={12} />
+          <span>Demo</span>
+        </button>
+
+        {/* Spotify Audio Hub Access */}
+        <button
+          className={styles.hudBtn}
+          onClick={() => setPlayerExpanded(true)}
+          style={{ color: '#1ed760', borderColor: 'rgba(29, 185, 84, 0.35)', background: 'rgba(29, 185, 84, 0.1)' }}
+          title="Open Spotify Audio Hub"
+        >
+          <Music2 size={13} color="#1ed760" />
+          <span>Spotify</span>
+        </button>
 
         <button className={styles.hudBtn} onClick={loadGraph} title="Reload Universe">
           <RefreshCw size={12} />
@@ -337,6 +443,33 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
         </div>
       )}
 
+      {/* Atmospheric Empty Canvas Prompt */}
+      {visibleNodes.length === 0 && !loading && (
+        <div className={styles.emptyCanvasPrompt}>
+          <div className={styles.emptyBadge}>// ATLAS UNIVERSE · BLANK SLATE</div>
+          <h2 className={styles.emptyTitle}>Your Canvas is Clear</h2>
+          <p className={styles.emptyText}>
+            Your personal digital universe is ready. Double-click anywhere or click below to place your first entity.
+          </p>
+          <div className={styles.emptyBtnRow}>
+            <button
+              className={styles.emptyAddBtn}
+              onClick={handleOpenAddNode}
+            >
+              <Plus size={14} />
+              <span>Add First Entity</span>
+            </button>
+            <button
+              className={styles.emptyRestoreBtn}
+              onClick={handleRestoreSeed}
+            >
+              <Sparkles size={13} />
+              <span>Restore Sample Demo</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <ReactFlow
         nodes={visibleNodes}
         edges={edges}
@@ -346,6 +479,9 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeDragStop={onNodeDragStop}
+        onPaneClick={() => setSelectedNode(null)}
+        onDoubleClick={handleOpenAddNode}
         fitView
         minZoom={0.15}
         maxZoom={2.5}
@@ -361,17 +497,16 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
         />
         <Controls position="bottom-left" />
         <MiniMap
-          nodeColor={n => {
-            if (n.data?.type === 'EMPIRE') return '#e5c07b';
-            if (n.data?.type === 'PERSON') return '#61afef';
-            if (n.data?.type === 'PHILOSOPHY') return '#c678dd';
-            return '#e2a857';
-          }}
-          maskColor="rgba(7, 7, 9, 0.85)"
+          nodeColor="#525360"
+          maskColor="rgba(7, 7, 9, 0.88)"
+          maskStrokeColor="var(--accent-gold)"
+          maskStrokeWidth={1}
           style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-sm)'
+            background: '#070709',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: 0,
+            width: 140,
+            height: 90
           }}
         />
       </ReactFlow>
@@ -380,11 +515,15 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
       <InspectorDrawer
         node={selectedNode}
         onClose={() => setSelectedNode(null)}
-        onSelectNode={id => {
-          const found = rawNodes.find(n => n.id === id);
+        onSelectNode={(id) => {
+          const found = rawNodes.find((n) => n.id === id);
           if (found) setSelectedNode(found);
         }}
         onDeleteNode={handleDeleteNode}
+        onNodeUpdated={(updated) => {
+          setSelectedNode(updated);
+          loadGraph();
+        }}
       />
 
       {/* Drag-to-create Connection Modal */}
@@ -396,6 +535,17 @@ export function AtlasCanvas({ onOpenCreateNode }: AtlasCanvasProps) {
         onConnected={() => {
           setPendingConnection(null);
           loadGraph();
+        }}
+      />
+
+      {/* Add Node Modal */}
+      <CreateNodeModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onNodeCreated={(newNode) => {
+          setIsCreateModalOpen(false);
+          loadGraph();
+          if (newNode) setSelectedNode(newNode);
         }}
       />
     </div>

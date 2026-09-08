@@ -6,10 +6,7 @@ import {
   Compass,
   Sparkles,
   BookOpen,
-  Share2,
-  Dumbbell,
-  Lightbulb,
-  Milestone
+  Share2
 } from 'lucide-react';
 import { getAllNodes, getAllConnections, getUniverseStats } from '@/lib/storage';
 import { StatsLedger } from '@/components/dashboard/StatsLedger';
@@ -23,32 +20,38 @@ export default async function HomePage() {
   const connections = getAllConnections();
   const stats = getUniverseStats();
 
-  // Random node spotlight for "From the Archive"
-  const randomNode = nodes.length > 0 ? nodes[Math.floor(Math.random() * nodes.length)] : null;
+  // Highlighted specimen for "From the Archive" (default to Albert Camus if present, or random node)
+  const camusNode = nodes.find(n => n.title.toLowerCase().includes('camus')) || null;
+  const spotlightNode = camusNode || (nodes.length > 0 ? nodes[Math.floor(Math.random() * nodes.length)] : null);
 
   return (
     <div className={styles.container}>
-      {/* Hero */}
+      {/* 1. Hero Section (Thinking Machines Scale × Railway Precision) */}
       <section className={styles.hero}>
-        <div>
-          <h1 className={styles.heroHeadline}>NICHE MAXING</h1>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroHeadline}>AYUSH THAKUR</h1>
           <p className={styles.heroSubline}>
             “A map of things I know, want to know, make, love, question, and become.”
           </p>
         </div>
 
-        <Link href="/atlas" className={styles.enterAtlasBtn}>
-          <Map size={18} />
-          <span>Enter The Atlas Universe</span>
-          <ArrowRight size={16} />
-        </Link>
+        {/* Disconnected CTA: anchored to lower-right on its own grid position */}
+        <div className={styles.heroCtaRow}>
+          <Link href="/atlas" className={styles.enterAtlasBtn}>
+            <Map size={14} />
+            <span>Enter Atlas Universe</span>
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </section>
 
-      {/* Currently Section (Section 30 of Brief) */}
+      {/* 2. Currently in Focus (Containerless Index Entries) */}
       <section>
-        <div className={styles.sectionTitle}>
-          <Compass size={14} color="var(--accent-gold)" />
-          <span>Currently in Focus</span>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionTitle}>
+            <Compass size={13} color="var(--accent-gold)" />
+            <span>01 // Currently in Focus</span>
+          </div>
         </div>
 
         <div className={styles.currentlyGrid}>
@@ -90,65 +93,53 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* From The Archive / Spotlight (Section 29) */}
-      {randomNode && (
+      {/* 3. From The Archive / Live Signal Interruption */}
+      {spotlightNode && (
         <section className={styles.spotlightCard}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <Sparkles size={14} color="var(--accent-gold)" />
-              <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-gold)', textTransform: 'uppercase' }}>
-                From The Archive · Curiosity Resurface
-              </span>
+            <div className={styles.spotlightMeta}>
+              <Sparkles size={13} />
+              <span>Specimen // Resurfaced · Curiosity Archive</span>
             </div>
-            <div className={styles.spotlightTitle}>{randomNode.title}</div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px', maxWidth: '650px' }}>
-              {randomNode.summary || randomNode.whyCare || 'An entity from your personal intellectual atlas.'}
+            <div className={styles.spotlightTitle}>{spotlightNode.title}</div>
+            <p className={styles.spotlightDesc}>
+              {spotlightNode.summary || spotlightNode.whyCare || 'An entity from your personal intellectual atlas.'}
             </p>
           </div>
 
           <Link
-            href={`/node/${randomNode.slug || randomNode.id}`}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '9px 16px',
-              background: 'var(--bg-surface-raised)',
-              border: '1px solid var(--border-muted)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--text-primary)',
-              fontSize: '0.84rem',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap'
-            }}
+            href={`/node/${spotlightNode.slug || spotlightNode.id}`}
+            className={styles.spotlightBtn}
           >
-            <span>Explore Node</span>
-            <ArrowRight size={14} />
+            <span>Explore Specimen</span>
+            <ArrowRight size={13} />
           </Link>
         </section>
       )}
 
-      {/* Recent Discoveries */}
+      {/* 4. Entities & Discoveries */}
       <section>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <div className={styles.sectionTitle} style={{ margin: 0 }}>
-            <BookOpen size={14} color="var(--accent-gold)" />
-            <span>Entities & Discoveries in Your Universe</span>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionTitle}>
+            <BookOpen size={13} color="var(--accent-gold)" />
+            <span>02 // Entities & Discoveries in Your Universe</span>
           </div>
 
-          <Link href="/atlas" style={{ fontSize: '0.8rem', color: 'var(--accent-gold)' }}>
-            View all on canvas →
+          <Link href="/atlas" className={styles.sectionActionLink}>
+            Canvas Graph View →
           </Link>
         </div>
 
-        <StaggeredNodesGrid nodes={nodes.slice(0, 8)} />
+        <StaggeredNodesGrid nodes={nodes.slice(0, 7)} />
       </section>
 
-      {/* Universe Metrics (Section 58, 85) */}
+      {/* 5. Universe Metrics */}
       <section>
-        <div className={styles.sectionTitle}>
-          <Share2 size={14} color="var(--accent-gold)" />
-          <span>Your World At A Glance</span>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionTitle}>
+            <Share2 size={13} color="var(--accent-gold)" />
+            <span>03 // Universe Telemetry & Registry</span>
+          </div>
         </div>
 
         <StatsLedger

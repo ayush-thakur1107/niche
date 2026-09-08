@@ -1,68 +1,71 @@
 .nodeCard {
-  background: var(--bg-surface-raised);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  min-width: 170px;
+  background: rgba(10, 11, 16, 0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0;
+  padding: 12px 14px;
+  min-width: 180px;
   max-width: 250px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   cursor: grab;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
   position: relative;
   user-select: none;
 }
 
 .nodeCard:hover {
-  border-color: var(--border-focus);
-  box-shadow: var(--shadow-lg), 0 0 16px rgba(226, 168, 87, 0.15);
+  background: rgba(16, 17, 24, 0.8);
+  border-color: rgba(226, 168, 87, 0.45);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 16px rgba(226, 168, 87, 0.12);
   transform: translateY(-2px);
 }
 
 .nodeCardSelected {
   border-color: var(--accent-gold) !important;
-  box-shadow: 0 0 0 2px rgba(226, 168, 87, 0.35), var(--shadow-lg) !important;
+  box-shadow: 0 0 0 1px var(--accent-gold), 0 8px 30px rgba(0, 0, 0, 0.8) !important;
 }
 
 .typeHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .typeBadge {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-family: var(--font-mono);
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 1px 6px;
-  border-radius: var(--radius-xs);
+  letter-spacing: 0.12em;
+  padding: 1px 5px;
+  border-radius: 0;
   border: 1px solid;
 }
 
 .learningStateBadge {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-family: var(--font-mono);
-  color: var(--text-muted);
-  background: var(--bg-abyss);
-  padding: 1px 5px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-faint);
+  color: var(--text-faint, #525360);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .title {
   font-family: var(--font-serif);
   font-size: 1.15rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--text-primary);
+  font-weight: 400;
+  line-height: 1.2;
+  color: #f2f2f5;
   margin-bottom: 4px;
+  letter-spacing: -0.01em;
 }
 
 .summary {
-  font-size: 0.76rem;
-  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: #8e8e9c;
   line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -74,10 +77,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 10px;
   padding-top: 6px;
-  border-top: 1px solid var(--border-faint);
-  font-size: 0.68rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.66rem;
   font-family: var(--font-mono);
   color: var(--text-faint);
 }
@@ -96,21 +99,14 @@
 .connectionCount {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   color: var(--accent-gold);
 }
 
-/* Custom XYFlow Handle styling */
 .customHandle {
-  width: 8px !important;
-  height: 8px !important;
+  width: 6px !important;
+  height: 6px !important;
   background: var(--accent-gold) !important;
-  border: 2px solid var(--bg-surface) !important;
-  border-radius: 50% !important;
-  transition: transform var(--transition-fast), background-color var(--transition-fast);
-}
-
-.customHandle:hover {
-  transform: scale(1.4);
-  background: #fff !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0 !important;
 }

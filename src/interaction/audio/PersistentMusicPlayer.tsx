@@ -165,21 +165,23 @@ export function PersistentMusicPlayer() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '4px 10px',
+              gap: '7px',
+              padding: '6px 14px',
               borderRadius: '6px',
-              background: 'rgba(29, 185, 84, 0.15)',
-              border: '1px solid rgba(29, 185, 84, 0.35)',
+              background: 'rgba(29, 185, 84, 0.18)',
+              border: '1px solid rgba(29, 185, 84, 0.45)',
               color: '#1ed760',
-              fontSize: '0.72rem',
-              fontWeight: 650,
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '0.74rem',
+              fontWeight: 600,
               cursor: 'pointer',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s ease',
+              boxShadow: '0 0 14px rgba(29, 185, 84, 0.25)'
             }}
-            title="Link and manage your personal Spotify"
+            title="Open Spotify Audio Hub"
           >
-            <Music2 size={13} />
-            <span>Link Spotify</span>
+            <Music2 size={14} />
+            <span>MY SPOTIFY</span>
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)' }}>
@@ -190,13 +192,14 @@ export function PersistentMusicPlayer() {
           </div>
 
           <a
-            href={userSpotifyLink || currentTrack.externalUrl}
+            href={userSpotifyLink || 'https://open.spotify.com'}
             target="_blank"
             rel="noreferrer"
             className={styles.externalLinkBtn}
-            title="Open in Spotify App"
+            style={{ fontFamily: 'var(--font-mono)' }}
+            title="Launch Spotify Web App"
           >
-            <span>Spotify</span>
+            <span>open.spotify.com</span>
             <ExternalLink size={12} />
           </a>
         </div>
@@ -419,6 +422,157 @@ export function PersistentMusicPlayer() {
               {/* TAB 1: Live Spotify Embed */}
               {activeTab === 'spotify' && (
                 <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                      flexWrap: 'wrap',
+                      gap: '8px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.66rem', fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
+                        FOCUS PRESETS:
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const link = 'https://open.spotify.com/playlist/37i9dQZF1DXdLEN7aqioXM';
+                          setInputUrl(link);
+                          setSpotifyLink(link);
+                        }}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          color: '#c4c5cf',
+                          padding: '3px 8px',
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Ambient Deep
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const link = 'https://open.spotify.com/playlist/37i9dQZF1DX9uKNf5jGX6m';
+                          setInputUrl(link);
+                          setSpotifyLink(link);
+                        }}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          color: '#c4c5cf',
+                          padding: '3px 8px',
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Classical Focus
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const link = 'https://open.spotify.com/playlist/37i9dQZF1DXcBWJnOwhguM';
+                          setInputUrl(link);
+                          setSpotifyLink(link);
+                        }}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          color: '#c4c5cf',
+                          padding: '3px 8px',
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Lo-Fi Study
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const link = 'https://open.spotify.com/playlist/37i9dQZF1DXbITWG1ZJKYt';
+                          setInputUrl(link);
+                          setSpotifyLink(link);
+                        }}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          color: '#c4c5cf',
+                          padding: '3px 8px',
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Midnight Jazz
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <a
+                        href="spotify:open"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '0.72rem',
+                          color: '#1ed760',
+                          fontFamily: 'var(--font-mono)',
+                          textDecoration: 'none',
+                          background: 'rgba(29, 185, 84, 0.12)',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          border: '1px solid rgba(29, 185, 84, 0.35)'
+                        }}
+                        title="Launch Spotify Desktop App on Windows"
+                      >
+                        <span>Desktop App ↗</span>
+                      </a>
+                      <a
+                        href={userSpotifyLink || 'https://open.spotify.com'}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '0.72rem',
+                          color: '#38bdf8',
+                          fontFamily: 'var(--font-mono)',
+                          textDecoration: 'none'
+                        }}
+                        title="Open in Spotify Web Player"
+                      >
+                        <span>Web Player ↗</span>
+                      </a>
+                      <a
+                        href="/spotify"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '0.72rem',
+                          color: 'var(--accent-gold)',
+                          fontFamily: 'var(--font-mono)',
+                          textDecoration: 'none'
+                        }}
+                        title="Open Full Spotify Sanctuary Page"
+                      >
+                        <span>Full Page ↗</span>
+                      </a>
+                    </div>
+                  </div>
+
                   <div
                     style={{
                       borderRadius: '14px',

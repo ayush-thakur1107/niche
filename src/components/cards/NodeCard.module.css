@@ -1,40 +1,40 @@
 .card {
   position: relative;
-  background: #0c0d12;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-sm, 4px);
-  padding: 20px 22px 18px 24px;
+  background: var(--bg-abyss);
+  padding: 24px 26px 20px 28px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s ease,
-              box-shadow 0.25s ease;
-  will-change: transform, border-color, box-shadow;
+  border-radius: 0;
+  transition: background 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-3px) scale(1.015);
-  border-color: rgba(226, 168, 87, 0.35);
-  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.65), inset 0 0 24px rgba(226, 168, 87, 0.03);
+  background: rgba(255, 255, 255, 0.025);
 }
 
-/* Left-edge archival type mark */
+/* Featured card: deeper presence in asymmetric layout */
+.cardFeatured {
+  padding: 32px 36px 26px 36px;
+  gap: 16px;
+}
+
+/* Left-edge archival type mark - sole container cue */
 .typeBar {
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 3px;
+  width: 2px;
   opacity: 0.85;
-  transition: opacity 0.2s ease, width 0.2s ease;
+  transition: width 0.15s ease, opacity 0.15s ease;
 }
 
 .card:hover .typeBar {
   opacity: 1;
-  width: 4px;
+  width: 3px;
 }
 
 /* Header with Eyebrow & Level */
@@ -46,29 +46,37 @@
 
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
   font-weight: 500;
   text-transform: uppercase;
 }
 
+/* Instrument-panel style: muted, right-aligned */
 .levelTag {
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--text-faint, #525360);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-/* Title */
+/* Editorial Title */
 .title {
   font-family: var(--font-serif);
-  font-size: 1.45rem;
-  font-weight: 500;
+  font-size: 1.38rem;
+  font-weight: 400;
   color: #f2f2f5;
-  line-height: 1.22;
-  letter-spacing: -0.01em;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
   margin: 0;
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
+}
+
+.cardFeatured .title {
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
 }
 
 .card:hover .title {
@@ -78,14 +86,20 @@
 /* Summary */
 .summary {
   font-family: var(--font-sans);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: #8e8e9c;
-  line-height: 1.6;
+  line-height: 1.55;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.cardFeatured .summary {
+  font-size: 0.88rem;
+  -webkit-line-clamp: 3;
+  max-width: 90%;
 }
 
 /* Footer & Status */
@@ -94,7 +108,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  padding-top: 10px;
+  padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -104,30 +118,30 @@
   gap: 7px;
 }
 
+/* Smaller, quieter status dot */
 .statusDot {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  flex-shrink: 0;
+  display: inline-block;
 }
 
 .statusText {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: #8e8e9c;
-  letter-spacing: 0.04em;
-  text-transform: capitalize;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted, #71727e);
 }
 
-.exploreArrow {
+.exploreTrigger {
+  color: var(--text-faint, #525360);
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: var(--text-faint, #525360);
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
-.card:hover .exploreArrow {
+.card:hover .exploreTrigger {
   color: var(--accent-gold);
-  transform: translateX(3px);
+  transform: translateX(2px);
 }

@@ -1,6 +1,40 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.08); /* Shared hairline grid lines */
+  border: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
+  overflow: hidden;
+}
+
+.colSpan8 {
+  grid-column: span 8;
+}
+
+.colSpan6 {
+  grid-column: span 6;
+}
+
+.colSpan4 {
+  grid-column: span 4;
+}
+
+@media (max-width: 960px) {
+  .colSpan8,
+  .colSpan6,
+  .colSpan4 {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .colSpan8,
+  .colSpan6,
+  .colSpan4 {
+    grid-column: span 1;
+  }
 }
