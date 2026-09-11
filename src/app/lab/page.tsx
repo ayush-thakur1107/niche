@@ -24,6 +24,7 @@ import { TextScramble } from '@/interaction/text/TextScramble';
 import { Typewriter } from '@/interaction/text/Typewriter';
 import { SpatialFolder } from '@/interaction/spatial/SpatialFolder';
 import { CoverFlow } from '@/interaction/carousel/CoverFlow';
+import { CardSwipe } from '@/interaction/carousel/CardSwipe';
 import styles from '../page.module.css';
 
 export default function InteractionLabPage() {
@@ -364,11 +365,32 @@ export default function InteractionLabPage() {
         </div>
       </section>
 
-      {/* 6. Spatial Folder Interaction */}
+      {/* 6. 3D Rotating Card Swipe Carousel */}
+      <section>
+        <div className={styles.sectionTitle}>
+          <Sparkles size={14} color="var(--accent-gold)" />
+          <span>06 · 3D Perspective Card Swipe (Draggable with dynamic Y-axis angular rotation)</span>
+        </div>
+
+        <div
+          style={{
+            background: 'rgba(12, 12, 16, 0.8)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            borderRadius: '16px',
+            padding: '32px 16px',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <CardSwipe />
+        </div>
+      </section>
+
+      {/* 7. Spatial Folder Interaction */}
       <section>
         <div className={styles.sectionTitle}>
           <Compass size={14} color="var(--accent-gold)" />
-          <span>06 · The Spatial Folder (Click to expand dimensionally)</span>
+          <span>07 · The Spatial Folder (Click to expand dimensionally)</span>
         </div>
 
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
