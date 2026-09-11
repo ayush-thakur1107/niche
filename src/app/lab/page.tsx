@@ -25,11 +25,16 @@ import { Typewriter } from '@/interaction/text/Typewriter';
 import { SpatialFolder } from '@/interaction/spatial/SpatialFolder';
 import { CoverFlow } from '@/interaction/carousel/CoverFlow';
 import { CardSwipe } from '@/interaction/carousel/CardSwipe';
+import { FluidTabs, type TabItem } from '@/interaction/tabs/FluidTabs';
+import { BiSolidPieChartAlt2 } from 'react-icons/bi';
+import { FaInbox, FaLandmark } from 'react-icons/fa';
 import styles from '../page.module.css';
 
 export default function InteractionLabPage() {
   const { setCursor, resetCursor } = useInteractionStore();
   const [clickCount, setClickCount] = useState(0);
+  const [activeLabTab, setActiveLabTab] = useState('canon');
+  const [activeDemoTab, setActiveDemoTab] = useState('accounts');
 
   const sampleFolderItems = [
     { id: '1', title: 'Cholas', icon: '⛵', category: 'history', subtitle: '9th–13th c.' },
@@ -402,6 +407,82 @@ export default function InteractionLabPage() {
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '440px', lineHeight: 1.5 }}>
             Click the folder icon to expand into a full-scale dimensional grid, mimicking the iPhone spatial folder metaphor.
           </p>
+        </div>
+      </section>
+
+      {/* 8. Fluid Motion Tabs */}
+      <section>
+        <div className={styles.sectionTitle}>
+          <Sliders size={14} color="var(--accent-gold)" />
+          <span>08 · Fluid Tactile Tabs (Spring sliding capsule with micro-blur & tactile depth)</span>
+        </div>
+
+        <div
+          style={{
+            background: 'rgba(12, 12, 16, 0.8)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            borderRadius: '16px',
+            padding: '40px 24px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '36px',
+          }}
+        >
+          {/* Specimen A: Exact Tactile Dark Pill (from watermelon.sh registry / screenshot) */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+            <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Specimen A · Tactile Charcoal Capsule (Accounts / Deposits / Funds)
+            </div>
+
+            <FluidTabs
+              tabs={[
+                { id: 'accounts', label: 'Accounts', icon: <FaLandmark size={18} /> },
+                { id: 'deposits', label: 'Deposits', icon: <FaInbox size={18} /> },
+                { id: 'funds', label: 'Funds', icon: <BiSolidPieChartAlt2 size={18} /> },
+              ]}
+              activeTab={activeDemoTab}
+              onChange={(id) => setActiveDemoTab(id)}
+              size="md"
+            />
+          </div>
+
+          {/* Specimen B: Niche Universe Domains with Badges */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+            <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Specimen B · Intellectual Canon & Navigation Mode
+            </div>
+
+            <FluidTabs
+              tabs={[
+                { id: 'canon', label: 'Intellectual Canon', icon: <BookOpen size={17} />, badge: '14' },
+                { id: 'cinema', label: 'Cinematheque', icon: <Film size={17} />, badge: 'New' },
+                { id: 'atlas', label: 'Atlas Canvas', icon: <Compass size={17} /> },
+                { id: 'theses', label: 'Active Theses', icon: <Sparkles size={17} /> },
+              ]}
+              activeTab={activeLabTab}
+              onChange={(id) => setActiveLabTab(id)}
+              size="md"
+            />
+          </div>
+
+          <div
+            style={{
+              padding: '14px 28px',
+              borderRadius: '12px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.82rem',
+              color: 'var(--accent-gold)',
+              display: 'flex',
+              gap: '20px',
+            }}
+          >
+            <span>Specimen A: <strong style={{ color: '#fff' }}>{activeDemoTab.toUpperCase()}</strong></span>
+            <span style={{ opacity: 0.3 }}>|</span>
+            <span>Specimen B: <strong style={{ color: '#fff' }}>{activeLabTab.toUpperCase()}</strong></span>
+          </div>
         </div>
       </section>
     </div>

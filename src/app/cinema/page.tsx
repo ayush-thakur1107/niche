@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Film, Star, Play, ArrowRight, Eye, Calendar, Sparkles, Plus, Trash2 } from 'lucide-react';
+import { Film, Star, Play, ArrowRight, Eye, Calendar, Sparkles, Plus, Trash2, Bookmark } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
 import { AddMovieModal } from '@/components/cinema/AddMovieModal';
+import { FluidTabs, type TabItem } from '@/interaction/tabs/FluidTabs';
 import { NodeItem } from '@/lib/types';
 import styles from './cinema.module.css';
 
@@ -85,17 +86,16 @@ export default function CinemaPage() {
         </div>
 
         <div className={styles.headerActions}>
-          <div className={styles.categoryFilters}>
-            {(['ALL', 'FAVORITES', 'WATCHLIST'] as const).map(cat => (
-              <button
-                key={cat}
-                className={`${styles.filterBtn} ${activeCategory === cat ? styles.filterBtnActive : ''}`}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          <FluidTabs
+            tabs={[
+              { id: 'ALL', label: 'All Films', icon: <Film size={15} /> },
+              { id: 'FAVORITES', label: 'Canon Favorites', icon: <Star size={15} /> },
+              { id: 'WATCHLIST', label: 'Watchlist', icon: <Bookmark size={15} /> },
+            ]}
+            activeTab={activeCategory}
+            onChange={(id) => setActiveCategory(id as 'ALL' | 'FAVORITES' | 'WATCHLIST')}
+            size="sm"
+          />
 
           <button
             type="button"

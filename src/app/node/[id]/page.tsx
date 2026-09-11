@@ -28,13 +28,14 @@ import {
   isCreativeWork
 } from '@/lib/types';
 import { ConnectionModal } from '@/components/atlas/ConnectionModal';
+import { FluidTabs, type TabItem } from '@/interaction/tabs/FluidTabs';
 import styles from './page.module.css';
 
-const SECTION_TABS: { type: SectionType; label: string }[] = [
-  { type: 'USER_KNOWLEDGE', label: 'My Notes & Understanding' },
-  { type: 'USER_OPINION', label: 'My Stance & Philosophy' },
-  { type: 'USER_QUESTION', label: 'Unresolved Questions' },
-  { type: 'EXTERNAL_CONTEXT', label: 'External Facts & Citations' },
+const SECTION_TABS: TabItem[] = [
+  { id: 'USER_KNOWLEDGE', label: 'My Notes', icon: <BookOpen size={15} /> },
+  { id: 'USER_OPINION', label: 'My Stance & Philosophy', icon: <Sparkles size={15} /> },
+  { id: 'USER_QUESTION', label: 'Questions', icon: <HelpCircle size={15} /> },
+  { id: 'EXTERNAL_CONTEXT', label: 'External Facts & Citations', icon: <Globe size={15} /> },
 ];
 
 export default function NodePage({
@@ -314,16 +315,13 @@ export default function NodePage({
         {/* Main Column */}
         <div className={styles.mainColumn}>
           {/* Section Type Tabs */}
-          <div className={styles.sectionTabs}>
-            {SECTION_TABS.map(tab => (
-              <button
-                key={tab.type}
-                className={`${styles.tabBtn} ${activeTab === tab.type ? styles.tabBtnActive : ''}`}
-                onClick={() => setActiveTab(tab.type)}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div style={{ marginBottom: '18px' }}>
+            <FluidTabs
+              tabs={SECTION_TABS}
+              activeTab={activeTab}
+              onChange={(id) => setActiveTab(id as SectionType)}
+              size="sm"
+            />
           </div>
 
           {/* Editor & Preview Area */}

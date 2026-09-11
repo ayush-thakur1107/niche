@@ -1,25 +1,22 @@
 .appContainer {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--bg-abyss);
   position: relative;
   z-index: 1;
+  width: 100%;
 }
 
 .mainContent {
-  margin-left: 260px;
+  margin-left: 0;
+  width: 100%;
   flex: 1;
-  min-height: 100vh;
+  min-height: calc(100vh - 68px);
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
   padding-bottom: 100px;
-}
-
-@media (max-width: 900px) {
-  .mainContent {
-    margin-left: 0;
-  }
 }

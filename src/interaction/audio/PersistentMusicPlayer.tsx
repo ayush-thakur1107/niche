@@ -25,6 +25,7 @@ import {
   SPOTIFY_PRESETS,
   Track
 } from '../store';
+import { FluidTabs, type TabItem } from '@/interaction/tabs/FluidTabs';
 import styles from './PersistentMusicPlayer.module.css';
 
 export function PersistentMusicPlayer() {
@@ -341,62 +342,16 @@ export function PersistentMusicPlayer() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  {/* Tab switchers */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      borderRadius: '8px',
-                      padding: '2px',
-                      border: '1px solid rgba(255, 255, 255, 0.06)'
-                    }}
-                  >
-                    <button
-                      onClick={() => setActiveTab('spotify')}
-                      style={{
-                        padding: '5px 12px',
-                        borderRadius: '6px',
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                        background: activeTab === 'spotify' ? 'rgba(29, 185, 84, 0.2)' : 'transparent',
-                        color: activeTab === 'spotify' ? '#1ed760' : '#8e8e9c',
-                        border: 'none',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Spotify Embed
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('presets')}
-                      style={{
-                        padding: '5px 12px',
-                        borderRadius: '6px',
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                        background: activeTab === 'presets' ? 'rgba(226, 168, 87, 0.2)' : 'transparent',
-                        color: activeTab === 'presets' ? '#e2a857' : '#8e8e9c',
-                        border: 'none',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Curated Playlists
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('queue')}
-                      style={{
-                        padding: '5px 12px',
-                        borderRadius: '6px',
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                        background: activeTab === 'queue' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
-                        color: activeTab === 'queue' ? '#38bdf8' : '#8e8e9c',
-                        border: 'none',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Universe Tracks
-                    </button>
-                  </div>
+                  <FluidTabs
+                    tabs={[
+                      { id: 'spotify', label: 'Spotify Embed', icon: <Radio size={14} /> },
+                      { id: 'presets', label: 'Curated Playlists', icon: <Disc3 size={14} /> },
+                      { id: 'queue', label: 'Universe Tracks', icon: <Music2 size={14} /> },
+                    ]}
+                    activeTab={activeTab}
+                    onChange={(id) => setActiveTab(id as 'spotify' | 'presets' | 'queue')}
+                    size="sm"
+                  />
 
                   <button
                     onClick={() => setPlayerExpanded(false)}

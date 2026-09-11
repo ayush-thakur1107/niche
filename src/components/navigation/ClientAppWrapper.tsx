@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { TopNavigation } from './TopNavigation';
 import { Sidebar } from './Sidebar';
 import { CommandPalette } from './CommandPalette';
 import { QuickCaptureModal } from './QuickCaptureModal';
@@ -77,7 +78,7 @@ export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
     <LenisProvider>
       <SmartCursor />
       <div className={styles.appContainer}>
-        <Sidebar
+        <TopNavigation
           onOpenCreateNode={() => setIsCreateNodeOpen(true)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         />
