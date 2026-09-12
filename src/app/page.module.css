@@ -1,6 +1,6 @@
 .container {
   min-height: 100vh;
-  background: var(--bg-abyss);
+  background: transparent;
   padding: 56px 64px 120px 64px;
   max-width: 1360px;
   margin: 0 auto;

@@ -66,23 +66,23 @@ export function TopNavigation({
 
   const navTabs: NavTabItem[] = useMemo(
     () => [
-      { id: '/', label: 'Overview', href: '/', icon: <Compass size={14} /> },
-      { id: '/atlas', label: 'Atlas', href: '/atlas', icon: <Map size={14} /> },
-      { id: '/cinema', label: 'Cinema', href: '/cinema', icon: <Film size={14} /> },
-      { id: '/library', label: 'Library', href: '/library', icon: <BookOpen size={14} /> },
-      { id: '/ideas', label: 'Ideas', href: '/ideas', icon: <Lightbulb size={14} /> },
-      { id: '/roadmaps', label: 'Roadmaps', href: '/roadmaps', icon: <Milestone size={14} /> },
-      { id: '/fitness', label: 'Body', href: '/fitness', icon: <Dumbbell size={14} /> },
-      { id: '/vocabulary', label: 'Lexicon', href: '/vocabulary', icon: <BookA size={14} /> },
-      { id: '/timeline', label: 'Timeline', href: '/timeline', icon: <History size={14} /> },
+      { id: '/', label: 'Overview', href: '/', icon: <Compass size={13} /> },
+      { id: '/atlas', label: 'Atlas', href: '/atlas', icon: <Map size={13} /> },
+      { id: '/cinema', label: 'Cinema', href: '/cinema', icon: <Film size={13} /> },
+      { id: '/library', label: 'Library', href: '/library', icon: <BookOpen size={13} /> },
+      { id: '/ideas', label: 'Ideas', href: '/ideas', icon: <Lightbulb size={13} /> },
+      { id: '/roadmaps', label: 'Roadmaps', href: '/roadmaps', icon: <Milestone size={13} /> },
+      { id: '/fitness', label: 'Body', href: '/fitness', icon: <Dumbbell size={13} /> },
+      { id: '/vocabulary', label: 'Lexicon', href: '/vocabulary', icon: <BookA size={13} /> },
+      { id: '/timeline', label: 'Timeline', href: '/timeline', icon: <History size={13} /> },
       {
         id: '/inbox',
         label: 'Inbox',
         href: '/inbox',
-        icon: <Inbox size={14} />,
+        icon: <Inbox size={13} />,
         badge: stats.inboxCount > 0 ? stats.inboxCount : undefined,
       },
-      { id: '/me', label: 'Me', href: '/me', icon: <User size={14} /> },
+      { id: '/me', label: 'Me', href: '/me', icon: <User size={13} /> },
     ],
     [stats.inboxCount]
   );
@@ -140,7 +140,7 @@ export function TopNavigation({
               position: 'relative',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '2px',
+              gap: '1.5px',
               borderRadius: '9999px',
               border: '1.6px solid #232326',
               backgroundColor: '#141415',
@@ -148,7 +148,8 @@ export function TopNavigation({
               boxShadow:
                 '0 8px 24px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
               userSelect: 'none',
-              maxWidth: '100%',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
             }}
           >
             {navTabs.map((tab, index) => {
@@ -170,11 +171,12 @@ export function TopNavigation({
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '9999px',
-                    padding: '5px 10px',
+                    padding: '4px 8px',
                     border: 'none',
                     background: 'transparent',
                     outline: 'none',
                     cursor: 'pointer',
+                    flexShrink: 0,
                     WebkitTapHighlightColor: 'transparent',
                     transition: 'color 0.2s ease',
                   }}
@@ -218,8 +220,8 @@ export function TopNavigation({
                       zIndex: 2,
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      fontSize: '0.79rem',
+                      gap: '5px',
+                      fontSize: '0.77rem',
                       fontWeight: isActive ? 650 : 500,
                       color: isActive ? '#ffffff' : '#72727a',
                       fontFamily:

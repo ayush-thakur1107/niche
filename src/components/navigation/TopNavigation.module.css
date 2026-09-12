@@ -76,26 +76,16 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  max-width: 1160px;
   margin: 0 12px;
   position: relative;
-  overflow: hidden;
-  mask-image: linear-gradient(to right, transparent 0%, black 10px, black calc(100% - 10px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10px, black calc(100% - 10px), transparent 100%);
+  min-width: 0;
 }
 
 .tabsScrollTrack {
   display: flex;
   align-items: center;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  padding: 4px 6px;
+  justify-content: center;
   max-width: 100%;
-}
-
-.tabsScrollTrack::-webkit-scrollbar {
-  display: none;
 }
 
 /* Action Controls on the Right */

@@ -11,6 +11,7 @@
 
 # Testing
 /coverage
+/tempfsdjnk
 
 # Next.js build output
 /.next/

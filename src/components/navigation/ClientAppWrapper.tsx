@@ -13,6 +13,7 @@ import { UniverseFooter } from './UniverseFooter';
 import { SmartCursor } from '@/interaction/cursor/SmartCursor';
 import { LenisProvider } from '@/interaction/scroll/LenisProvider';
 import { PersistentMusicPlayer } from '@/interaction/audio/PersistentMusicPlayer';
+import { CosmicBackground } from '../common/CosmicBackground';
 import styles from '@/app/layout.module.css';
 
 export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
@@ -76,6 +77,7 @@ export function ClientAppWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <LenisProvider>
+      <CosmicBackground />
       <SmartCursor />
       <div className={styles.appContainer}>
         <TopNavigation

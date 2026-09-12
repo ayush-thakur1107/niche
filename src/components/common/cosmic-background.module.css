@@ -1,0 +1,34 @@
+.cosmicContainer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background-color: #02040a;
+  contain: strict;
+}
+
+/* Atmospheric central blue cosmic glow matching Animmaster BG-3 */
+.cosmicGlow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse 65% 55% at 50% 48%, rgba(14, 44, 82, 0.72) 0%, rgba(8, 26, 52, 0.45) 42%, rgba(2, 6, 16, 0.88) 72%, #02040a 100%),
+    radial-gradient(circle 35% at 50% 50%, rgba(20, 75, 135, 0.28) 0%, transparent 70%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Canvas element running smooth 60fps starfield */
+.cosmicCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
