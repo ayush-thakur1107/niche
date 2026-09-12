@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { BookOpen, Star, ArrowRight, X, Sparkles, BookMarked, Plus, Trash2 } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
@@ -10,6 +11,7 @@ import { NodeItem } from '@/lib/types';
 import styles from './library.module.css';
 
 export default function LibraryPage() {
+  const router = useRouter();
   const { setCursor, resetCursor } = useInteractionStore();
   const [books, setBooks] = useState<NodeItem[]>([]);
   const [selectedBook, setSelectedBook] = useState<NodeItem | null>(null);
@@ -32,18 +34,18 @@ export default function LibraryPage() {
   const handleDeleteBook = async (e: React.MouseEvent, book: NodeItem) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm(`Delete "${book.title}" from library?`)) {
-      try {
-        const res = await fetch(`/api/nodes/${book.id}`, { method: 'DELETE' });
-        if (res.ok) {
-          setBooks(prev => prev.filter(b => b.id !== book.id));
-          if (selectedBook?.id === book.id) {
-            setSelectedBook(null);
-          }
+    try {
+      const res = await fetch(`/api/nodes/${book.id}`, { method: 'DELETE' });
+      if (res.ok || res.status === 404) {
+        setBooks(prev => prev.filter(b => b.id !== book.id));
+        if (selectedBook?.id === book.id) {
+          setSelectedBook(null);
         }
-      } catch (err) {
-        console.error('Failed to delete book:', err);
+        router.refresh();
       }
+    } catch (err) {
+      console.error('Failed to delete book:', err);
+      setBooks(prev => prev.filter(b => b.id !== book.id));
     }
   };
 
@@ -158,6 +160,8 @@ export default function LibraryPage() {
                       <button
                         type="button"
                         onClick={(e) => handleDeleteBook(e, book)}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}
                         style={{
                           display: 'flex',
                           alignItems: 'center',

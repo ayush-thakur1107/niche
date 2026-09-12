@@ -20,7 +20,7 @@ export interface FluidTabsProps {
   className?: string;
   layoutId?: string;
   size?: 'sm' | 'md' | 'lg';
-  theme?: 'dark-tactile' | 'gold-accent';
+  theme?: 'astronomical' | 'dark-tactile' | 'gold-accent';
 }
 
 export const FluidTabs: FC<FluidTabsProps> = ({
@@ -31,9 +31,10 @@ export const FluidTabs: FC<FluidTabsProps> = ({
   className = '',
   layoutId: customLayoutId,
   size = 'md',
-  theme = 'dark-tactile',
+  theme = 'astronomical',
 }) => {
   const [internalActive, setInternalActive] = useState<string>(defaultActive);
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const autoId = useId();
   const layoutId = customLayoutId || `fluid-tab-pill-${autoId}`;
   const { setCursor, resetCursor } = useInteractionStore();
@@ -60,27 +61,27 @@ export const FluidTabs: FC<FluidTabsProps> = ({
   const sizeConfigs = {
     sm: {
       containerPadding: '3px',
-      tabPadding: '6px 12px',
-      fontSize: '0.8rem',
-      iconSize: 16,
-      gap: '4px',
+      tabPadding: '5px 12px',
+      fontSize: '0.78rem',
+      iconSize: 14,
+      gap: '3px',
       itemGap: '6px',
     },
     md: {
-      containerPadding: '4px',
-      tabPadding: '8px 18px',
-      fontSize: '0.9rem',
-      iconSize: 19,
-      gap: '6px',
-      itemGap: '8px',
+      containerPadding: '3px 4px',
+      tabPadding: '7px 16px',
+      fontSize: '0.84rem',
+      iconSize: 16,
+      gap: '4px',
+      itemGap: '7px',
     },
     lg: {
-      containerPadding: '5px',
-      tabPadding: '11px 22px',
-      fontSize: '1rem',
-      iconSize: 22,
-      gap: '8px',
-      itemGap: '10px',
+      containerPadding: '4px 5px',
+      tabPadding: '10px 20px',
+      fontSize: '0.92rem',
+      iconSize: 18,
+      gap: '6px',
+      itemGap: '9px',
     },
   }[size];
 
@@ -94,10 +95,13 @@ export const FluidTabs: FC<FluidTabsProps> = ({
         alignItems: 'center',
         gap: sizeConfigs.gap,
         borderRadius: '9999px',
-        border: '1.6px solid #232326',
-        backgroundColor: '#141415',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'rgba(10, 11, 16, 0.72)',
+        backdropFilter: 'blur(16px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(140%)',
         padding: sizeConfigs.containerPadding,
-        boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
+        boxShadow:
+          '0 8px 30px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 0 12px rgba(0, 0, 0, 0.35)',
         userSelect: 'none',
         maxWidth: '100%',
         overflowX: 'auto',
@@ -107,6 +111,7 @@ export const FluidTabs: FC<FluidTabsProps> = ({
     >
       {tabs.map((tab, index) => {
         const isActive = currentActive === tab.id;
+        const isHovered = hoveredTab === tab.id;
 
         return (
           <button
@@ -116,8 +121,14 @@ export const FluidTabs: FC<FluidTabsProps> = ({
             tabIndex={isActive ? 0 : -1}
             onClick={() => handleChange(tab.id)}
             onKeyDown={(e) => handleKeyDown(e, index)}
-            onMouseEnter={() => setCursor('OPEN', 'TAB')}
-            onMouseLeave={resetCursor}
+            onMouseEnter={() => {
+              setHoveredTab(tab.id);
+              setCursor('OPEN', 'TAB');
+            }}
+            onMouseLeave={() => {
+              setHoveredTab(null);
+              resetCursor();
+            }}
             style={{
               position: 'relative',
               display: 'inline-flex',
@@ -126,50 +137,47 @@ export const FluidTabs: FC<FluidTabsProps> = ({
               borderRadius: '9999px',
               padding: sizeConfigs.tabPadding,
               border: 'none',
-              background: 'transparent',
+              background: isHovered && !isActive ? 'rgba(255, 255, 255, 0.04)' : 'transparent',
               outline: 'none',
               cursor: 'pointer',
               WebkitTapHighlightColor: 'transparent',
-              transition: 'color 0.2s ease',
+              transition: 'background-color 0.18s ease, transform 0.18s ease',
+              transform: isHovered && !isActive ? 'translateY(-0.5px)' : 'translateY(0)',
             }}
           >
-            {/* Sliding Spring Active Capsule */}
+            {/* Sliding Spring Active Capsule: Soft, translucent physical surface */}
             {isActive && (
               <motion.div
                 layoutId={layoutId}
                 transition={{
                   type: 'spring',
-                  stiffness: 280,
-                  damping: 25,
-                  mass: 0.8,
+                  stiffness: 340,
+                  damping: 28,
+                  mass: 0.65,
                 }}
                 style={{
                   position: 'absolute',
                   inset: 0,
                   borderRadius: '9999px',
-                  border: '1px solid rgba(255, 255, 255, 0.16)',
+                  border: '1px solid rgba(255, 255, 255, 0.13)',
                   background:
-                    theme === 'gold-accent'
-                      ? 'linear-gradient(180deg, #d89e49 0%, #b87d2a 100%)'
-                      : 'linear-gradient(180deg, #353539 0%, #222225 100%)',
+                    'linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.045) 100%)',
                   boxShadow:
-                    theme === 'gold-accent'
-                      ? '0 4px 16px rgba(226, 168, 87, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
-                      : '0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
+                    '0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
                   zIndex: 1,
                 }}
               />
             )}
 
-            {/* Fluid micro-blur & typography */}
+            {/* Fluid typography & tactile icon */}
             <motion.div
               transition={{
-                duration: 0.3,
+                duration: 0.22,
                 ease: 'easeOut',
               }}
               animate={{
                 filter: isActive
-                  ? ['blur(0px)', 'blur(4px)', 'blur(0px)']
+                  ? ['blur(0px)', 'blur(2.5px)', 'blur(0px)']
                   : 'blur(0px)',
               }}
               style={{
@@ -179,21 +187,24 @@ export const FluidTabs: FC<FluidTabsProps> = ({
                 alignItems: 'center',
                 gap: sizeConfigs.itemGap,
                 fontSize: sizeConfigs.fontSize,
-                fontWeight: isActive ? 700 : 600,
+                fontWeight: isActive ? 550 : 450,
                 color: isActive
-                  ? (theme === 'gold-accent' ? '#09090b' : '#ffffff')
-                  : '#72727a',
-                fontFamily: 'var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
+                  ? '#f4f3ef'
+                  : isHovered
+                  ? '#d8d7d3'
+                  : '#7e808c',
+                fontFamily:
+                  'var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
                 letterSpacing: '-0.01em',
                 whiteSpace: 'nowrap',
-                transition: 'color 0.2s ease',
+                transition: 'color 0.18s ease',
               }}
             >
               {tab.icon && (
                 <motion.div
-                  animate={{ scale: isActive ? 1.05 : 1 }}
+                  animate={{ scale: isActive ? 1.04 : 1 }}
                   transition={{
-                    scale: { type: 'spring', stiffness: 300, damping: 15 },
+                    scale: { type: 'spring', stiffness: 320, damping: 20 },
                   }}
                   style={{
                     display: 'flex',
@@ -201,8 +212,11 @@ export const FluidTabs: FC<FluidTabsProps> = ({
                     justifyContent: 'center',
                     flexShrink: 0,
                     color: isActive
-                      ? (theme === 'gold-accent' ? '#09090b' : '#ffffff')
-                      : '#72727a',
+                      ? '#f4f3ef'
+                      : isHovered
+                      ? '#d8d7d3'
+                      : '#70727e',
+                    transition: 'color 0.18s ease',
                   }}
                 >
                   {tab.icon}
@@ -214,18 +228,20 @@ export const FluidTabs: FC<FluidTabsProps> = ({
               {tab.badge !== undefined && (
                 <span
                   style={{
-                    fontSize: '0.68rem',
+                    fontSize: '0.66rem',
                     fontFamily: 'var(--font-mono, monospace)',
-                    fontWeight: 700,
-                    padding: '1px 6px',
+                    fontWeight: 600,
+                    padding: '1px 5px',
                     borderRadius: '999px',
                     background: isActive
-                      ? (theme === 'gold-accent' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.16)')
-                      : 'rgba(255, 255, 255, 0.08)',
-                    color: isActive
-                      ? (theme === 'gold-accent' ? '#09090b' : '#ffffff')
-                      : '#8e8e96',
+                      ? 'rgba(226, 168, 87, 0.14)'
+                      : 'rgba(255, 255, 255, 0.06)',
+                    border: isActive
+                      ? '1px solid rgba(226, 168, 87, 0.3)'
+                      : '1px solid rgba(255, 255, 255, 0.08)',
+                    color: isActive ? '#e2a857' : '#888995',
                     marginLeft: '2px',
+                    transition: 'all 0.18s ease',
                   }}
                 >
                   {tab.badge}

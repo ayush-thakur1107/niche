@@ -107,7 +107,10 @@ export default function MePage() {
         {hubs.length > 0 ? (
           <div className={styles.nodesGrid}>
             {hubs.map(node => (
-              <NodeCard key={node.id} node={node} />
+              <NodeCard
+                key={node.id}
+                node={node}
+              />
             ))}
           </div>
         ) : (

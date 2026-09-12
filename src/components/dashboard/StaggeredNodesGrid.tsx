@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { NodeItem } from '@/lib/types';
@@ -12,7 +13,23 @@ interface StaggeredNodesGridProps {
 }
 
 export function StaggeredNodesGrid({ nodes }: StaggeredNodesGridProps) {
+  const router = useRouter();
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const [gridNodes, setGridNodes] = useState<NodeItem[]>(nodes);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setGridNodes(nodes.filter(n => !deletedIds.has(n.id) && !deletedIds.has(n.slug)));
+  }, [nodes, deletedIds]);
+
+  const handleDeleteNode = (nodeId: string) => {
+    setDeletedIds(prev => {
+      const next = new Set(prev);
+      next.add(nodeId);
+      return next;
+    });
+    setGridNodes(prev => prev.filter(n => n.id !== nodeId && n.slug !== nodeId));
+  };
 
   useGSAP(
     () => {
@@ -35,7 +52,7 @@ export function StaggeredNodesGrid({ nodes }: StaggeredNodesGridProps) {
         }
       );
     },
-    { scope: containerRef, dependencies: [nodes] }
+    { scope: containerRef, dependencies: [gridNodes] }
   );
 
   const getColSpanClass = (index: number) => {
@@ -46,7 +63,7 @@ export function StaggeredNodesGrid({ nodes }: StaggeredNodesGridProps) {
     return styles.colSpan4;
   };
 
-  if (nodes.length === 0) {
+  if (gridNodes.length === 0) {
     return (
       <div
         style={{
@@ -67,12 +84,13 @@ export function StaggeredNodesGrid({ nodes }: StaggeredNodesGridProps) {
 
   return (
     <div ref={containerRef} className={styles.grid}>
-      {nodes.map((node, index) => (
+      {gridNodes.map((node, index) => (
         <NodeCard
           key={node.id}
           node={node}
           isFeatured={index === 0}
           className={getColSpanClass(index)}
+          onDelete={handleDeleteNode}
         />
       ))}
     </div>

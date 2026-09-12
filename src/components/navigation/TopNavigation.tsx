@@ -49,6 +49,7 @@ export function TopNavigation({
     totalNodes: 0,
     inboxCount: 0,
   });
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/stats')
@@ -140,13 +141,15 @@ export function TopNavigation({
               position: 'relative',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '1.5px',
+              gap: '2px',
               borderRadius: '9999px',
-              border: '1.6px solid #232326',
-              backgroundColor: '#141415',
-              padding: '3px 4px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              backgroundColor: 'rgba(10, 11, 16, 0.72)',
+              backdropFilter: 'blur(16px) saturate(140%)',
+              WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+              padding: '3px',
               boxShadow:
-                '0 8px 24px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
+                '0 8px 30px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 0 12px rgba(0, 0, 0, 0.35)',
               userSelect: 'none',
               flexShrink: 0,
               whiteSpace: 'nowrap',
@@ -154,6 +157,7 @@ export function TopNavigation({
           >
             {navTabs.map((tab, index) => {
               const isActive = activeTabId === tab.id;
+              const isHovered = hoveredTab === tab.id;
 
               return (
                 <button
@@ -163,42 +167,50 @@ export function TopNavigation({
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => handleTabClick(tab)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
-                  onMouseEnter={() => setCursor('OPEN', tab.label.toUpperCase())}
-                  onMouseLeave={resetCursor}
+                  onMouseEnter={() => {
+                    setHoveredTab(tab.id);
+                    setCursor('OPEN', tab.label.toUpperCase());
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredTab(null);
+                    resetCursor();
+                  }}
                   style={{
                     position: 'relative',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '9999px',
-                    padding: '4px 8px',
+                    padding: '5px 10px',
                     border: 'none',
-                    background: 'transparent',
+                    background: isHovered && !isActive ? 'rgba(255, 255, 255, 0.04)' : 'transparent',
                     outline: 'none',
                     cursor: 'pointer',
                     flexShrink: 0,
                     WebkitTapHighlightColor: 'transparent',
-                    transition: 'color 0.2s ease',
+                    transition: 'background-color 0.18s ease, transform 0.18s ease',
+                    transform: isHovered && !isActive ? 'translateY(-0.5px)' : 'translateY(0)',
                   }}
                 >
-                  {/* Sliding Spring Active Capsule */}
+                  {/* Sliding Spring Active Capsule: Translucent soft physical surface */}
                   {isActive && (
                     <motion.div
                       layoutId="top-nav-active-pill"
                       transition={{
                         type: 'spring',
-                        stiffness: 280,
-                        damping: 25,
-                        mass: 0.8,
+                        stiffness: 340,
+                        damping: 28,
+                        mass: 0.65,
                       }}
                       style={{
                         position: 'absolute',
                         inset: 0,
                         borderRadius: '9999px',
-                        border: '1px solid rgba(255, 255, 255, 0.16)',
-                        background: 'linear-gradient(180deg, #353539 0%, #222225 100%)',
+                        border: '1px solid rgba(255, 255, 255, 0.13)',
+                        background:
+                          'linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.045) 100%)',
                         boxShadow:
-                          '0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
+                          '0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
                         zIndex: 1,
                       }}
                     />
@@ -207,12 +219,12 @@ export function TopNavigation({
                   {/* Tab Label, Icon with Fluid Micro-Blur */}
                   <motion.div
                     transition={{
-                      duration: 0.28,
+                      duration: 0.22,
                       ease: 'easeOut',
                     }}
                     animate={{
                       filter: isActive
-                        ? ['blur(0px)', 'blur(3px)', 'blur(0px)']
+                        ? ['blur(0px)', 'blur(2.5px)', 'blur(0px)']
                         : 'blur(0px)',
                     }}
                     style={{
@@ -221,27 +233,36 @@ export function TopNavigation({
                       display: 'flex',
                       alignItems: 'center',
                       gap: '5px',
-                      fontSize: '0.77rem',
-                      fontWeight: isActive ? 650 : 500,
-                      color: isActive ? '#ffffff' : '#72727a',
+                      fontSize: '0.76rem',
+                      fontWeight: isActive ? 550 : 450,
+                      color: isActive
+                        ? '#f4f3ef'
+                        : isHovered
+                        ? '#d8d7d3'
+                        : '#7e808c',
                       fontFamily:
                         'var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
                       letterSpacing: '-0.01em',
                       whiteSpace: 'nowrap',
-                      transition: 'color 0.2s ease',
+                      transition: 'color 0.18s ease',
                     }}
                   >
                     <motion.div
-                      animate={{ scale: isActive ? 1.05 : 1 }}
+                      animate={{ scale: isActive ? 1.04 : 1 }}
                       transition={{
-                        scale: { type: 'spring', stiffness: 300, damping: 15 },
+                        scale: { type: 'spring', stiffness: 320, damping: 20 },
                       }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
-                        color: isActive ? '#ffffff' : '#72727a',
+                        color: isActive
+                          ? '#f4f3ef'
+                          : isHovered
+                          ? '#d8d7d3'
+                          : '#70727e',
+                        transition: 'color 0.18s ease',
                       }}
                     >
                       {tab.icon}
@@ -254,13 +275,17 @@ export function TopNavigation({
                         style={{
                           fontSize: '0.64rem',
                           fontFamily: 'var(--font-mono, monospace)',
-                          fontWeight: 700,
+                          fontWeight: 600,
                           padding: '1px 5px',
                           borderRadius: '999px',
                           background: isActive
-                            ? 'rgba(255, 255, 255, 0.2)'
-                            : 'rgba(255, 255, 255, 0.08)',
-                          color: isActive ? '#ffffff' : '#8e8e96',
+                            ? 'rgba(226, 168, 87, 0.14)'
+                            : 'rgba(255, 255, 255, 0.06)',
+                          border: isActive
+                            ? '1px solid rgba(226, 168, 87, 0.3)'
+                            : '1px solid rgba(255, 255, 255, 0.08)',
+                          color: isActive ? '#e2a857' : '#888995',
+                          transition: 'all 0.18s ease',
                         }}
                       >
                         {tab.badge}
@@ -282,7 +307,9 @@ export function TopNavigation({
           onClick={onOpenCreateNode}
           title="Create a new node in your universe"
         >
-          <Plus size={14} />
+          <span className={styles.newBtnIcon}>
+            <Plus size={13} />
+          </span>
           <span>New Node</span>
         </button>
 

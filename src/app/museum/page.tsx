@@ -55,11 +55,9 @@ export default function MuseumPage() {
   const handleDeleteSpecimen = (e: React.MouseEvent, specimenId: string, title: string) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm(`Remove specimen "${title}" from museum archive?`)) {
-      setSpecimens(prev => prev.filter(s => s.id !== specimenId));
-      if (activeSpecimen?.id === specimenId) {
-        setActiveSpecimen(null);
-      }
+    setSpecimens(prev => prev.filter(s => s.id !== specimenId));
+    if (activeSpecimen?.id === specimenId) {
+      setActiveSpecimen(null);
     }
   };
 
@@ -384,6 +382,8 @@ export default function MuseumPage() {
                   <button
                     type="button"
                     onClick={(e) => handleDeleteSpecimen(e, specimen.id, specimen.title)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -580,6 +580,8 @@ export default function MuseumPage() {
                   <button
                     type="button"
                     onClick={(e) => handleDeleteSpecimen(e, activeSpecimen.id, activeSpecimen.title)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                     style={{
                       display: 'flex',
                       alignItems: 'center',

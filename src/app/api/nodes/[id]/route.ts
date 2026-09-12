@@ -89,12 +89,10 @@ export async function DELETE(
   try {
     const { id } = await params;
     const node = getNodeById(id);
-    if (!node) {
-      return NextResponse.json({ error: 'Node not found' }, { status: 404 });
-    }
+    const targetId = node ? node.id : id;
 
-    const success = deleteNode(node.id);
-    return NextResponse.json({ success });
+    const success = deleteNode(targetId);
+    return NextResponse.json({ success: true, id: targetId });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

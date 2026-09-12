@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, Trash2 } from 'lucide-react';
 import { NodeItem, UncertaintyLevel, isCreativeWork } from '@/lib/types';
 import styles from './NodeCard.module.css';
@@ -46,6 +47,11 @@ const STATUS_CONFIG: Record<UncertaintyLevel, { label: string; color: string }> 
 };
 
 export function NodeCard({ node, isFeatured = false, className, onDelete }: NodeCardProps) {
+  const router = useRouter();
+  const [isRemoved, setIsRemoved] = useState(false);
+
+  if (isRemoved) return null;
+
   const accentColor = TYPE_ACCENTS[node.type] || '#e2a857';
   const statusInfo = STATUS_CONFIG[node.uncertaintyLevel] || {
     label: (node.uncertaintyLevel || '').replace('_', ' '),
@@ -55,19 +61,18 @@ export function NodeCard({ node, isFeatured = false, className, onDelete }: Node
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`Delete "${node.title}" from universe?`)) {
-      try {
-        const res = await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
-        if (res.ok) {
-          if (onDelete) {
-            onDelete(node.id);
-          } else {
-            window.location.reload();
-          }
-        }
-      } catch (err) {
-        console.error('Failed to delete node:', err);
-      }
+
+    // Optimistic instant removal from UI
+    setIsRemoved(true);
+    if (onDelete) {
+      onDelete(node.id);
+    }
+
+    try {
+      await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
+      router.refresh();
+    } catch (err) {
+      console.error('Failed to delete node:', err);
     }
   };
 
@@ -103,6 +108,12 @@ export function NodeCard({ node, isFeatured = false, className, onDelete }: Node
             type="button"
             className={styles.deleteCardBtn}
             onClick={handleDelete}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
+            onPointerDown={(e) => {
+              e.stopPropagation();
+            }}
             title={`Delete "${node.title}"`}
             aria-label={`Delete "${node.title}"`}
           >

@@ -30,6 +30,7 @@ const DATA_DIR = process.env.VERCEL
 const DB_FILE = path.join(DATA_DIR, 'universe.json');
 
 let inMemoryDb: DatabaseSchema | null = null;
+let lastDbMtime: number = 0;
 
 function ensureDirectoryExistence(filePath: string) {
   const dirname = path.dirname(filePath);
@@ -53,12 +54,19 @@ function getInitialDatabase(): DatabaseSchema {
 
 export function readDatabase(): DatabaseSchema {
   try {
-    if (inMemoryDb) return inMemoryDb;
+    ensureDirectoryExistence(DB_FILE);
     if (!fs.existsSync(DB_FILE)) {
       const initial = getInitialDatabase();
       writeDatabase(initial);
       return initial;
     }
+
+    const stat = fs.statSync(DB_FILE);
+    // If in-memory cache exists and file on disk hasn't been modified by another process/worker, return cache
+    if (inMemoryDb && stat.mtimeMs <= lastDbMtime) {
+      return inMemoryDb;
+    }
+
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
     const result: DatabaseSchema = {
@@ -72,6 +80,7 @@ export function readDatabase(): DatabaseSchema {
       initialized: parsed.initialized ?? true
     };
     inMemoryDb = result;
+    lastDbMtime = stat.mtimeMs;
     return result;
   } catch (error) {
     if (inMemoryDb) return inMemoryDb;
@@ -104,6 +113,10 @@ export function writeDatabase(data: DatabaseSchema): void {
   try {
     ensureDirectoryExistence(DB_FILE);
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    try {
+      const stat = fs.statSync(DB_FILE);
+      lastDbMtime = stat.mtimeMs;
+    } catch {}
   } catch (error) {
     console.warn('Filesystem write notice (using in-memory cache):', error);
   }
@@ -196,18 +209,22 @@ export function updateNode(id: string, updates: Partial<NodeItem>): NodeItem | u
 
 export function deleteNode(id: string): boolean {
   const db = readDatabase();
-  const initialLength = db.nodes.length;
-  db.nodes = db.nodes.filter(n => n.id !== id);
-  if (db.nodes.length === initialLength) return false;
+  const matchedNodes = db.nodes.filter(n => n.id === id || n.slug === id);
+  const idsToDelete = new Set(matchedNodes.map(n => n.id));
+  idsToDelete.add(id);
+
+  db.nodes = db.nodes.filter(n => !idsToDelete.has(n.id) && n.slug !== id);
 
   // Delete connections
-  db.connections = db.connections.filter(c => c.sourceNodeId !== id && c.targetNodeId !== id);
+  db.connections = db.connections.filter(c => !idsToDelete.has(c.sourceNodeId) && !idsToDelete.has(c.targetNodeId));
   // Delete contents
-  db.contents = db.contents.filter(c => c.nodeId !== id);
+  db.contents = db.contents.filter(c => !idsToDelete.has(c.nodeId));
   // Delete position
-  delete db.positions[id];
+  idsToDelete.forEach(nid => {
+    delete db.positions[nid];
+  });
   // Delete sources
-  db.sources = db.sources.filter(s => s.nodeId !== id);
+  db.sources = db.sources.filter(s => !idsToDelete.has(s.nodeId));
 
   writeDatabase(db);
   return true;

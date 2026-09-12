@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Film, Star, Play, ArrowRight, Eye, Calendar, Sparkles, Plus, Trash2, Bookmark } from 'lucide-react';
 import { useInteractionStore } from '@/interaction/store';
 import { CardTilt } from '@/interaction/cards/CardTilt';
@@ -11,6 +12,7 @@ import { NodeItem } from '@/lib/types';
 import styles from './cinema.module.css';
 
 export default function CinemaPage() {
+  const router = useRouter();
   const { setCursor, resetCursor } = useInteractionStore();
   const [movies, setMovies] = useState<NodeItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<'ALL' | 'FAVORITES' | 'WATCHLIST'>('ALL');
@@ -37,15 +39,15 @@ export default function CinemaPage() {
   const handleDeleteMovie = async (e: React.MouseEvent, movie: NodeItem) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm(`Delete "${movie.title}" from film canon?`)) {
-      try {
-        const res = await fetch(`/api/nodes/${movie.id}`, { method: 'DELETE' });
-        if (res.ok) {
-          setMovies(prev => prev.filter(m => m.id !== movie.id));
-        }
-      } catch (err) {
-        console.error('Failed to delete movie:', err);
+    try {
+      const res = await fetch(`/api/nodes/${movie.id}`, { method: 'DELETE' });
+      if (res.ok || res.status === 404) {
+        setMovies(prev => prev.filter(m => m.id !== movie.id));
+        router.refresh();
       }
+    } catch (err) {
+      console.error('Failed to delete movie:', err);
+      setMovies(prev => prev.filter(m => m.id !== movie.id));
     }
   };
 
@@ -204,6 +206,8 @@ export default function CinemaPage() {
                       type="button"
                       className={styles.deleteMovieBtn}
                       onClick={(e) => handleDeleteMovie(e, m)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onPointerDown={(e) => e.stopPropagation()}
                       title={`Delete "${m.title}"`}
                       aria-label={`Delete "${m.title}"`}
                     >

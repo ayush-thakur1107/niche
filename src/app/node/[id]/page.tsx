@@ -57,6 +57,8 @@ export default function NodePage({
   const [allNodes, setAllNodes] = useState<NodeItem[]>([]);
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
   const [targetForConnection, setTargetForConnection] = useState<NodeItem | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadNode = async () => {
     try {
@@ -172,9 +174,19 @@ export default function NodePage({
 
   const handleDelete = async () => {
     if (!node) return;
-    if (confirm(`Are you sure you want to delete "${node.title}" from your universe?`)) {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      setTimeout(() => setConfirmDelete(false), 4000);
+      return;
+    }
+    setIsDeleting(true);
+    try {
       await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
       router.push('/atlas');
+      router.refresh();
+    } catch (err) {
+      console.error('Failed to delete node:', err);
+      setIsDeleting(false);
     }
   };
 
@@ -240,9 +252,12 @@ export default function NodePage({
           <button
             className={styles.actionBtn}
             onClick={handleDelete}
-            title="Delete this node"
+            title={confirmDelete ? 'Click again to confirm deleting this node' : 'Delete this node'}
+            style={confirmDelete ? { background: 'rgba(239, 68, 68, 0.2)', borderColor: '#ef4444', color: '#f87171' } : undefined}
+            disabled={isDeleting}
           >
             <Trash2 size={14} />
+            <span>{isDeleting ? 'Deleting...' : confirmDelete ? 'Confirm?' : 'Delete'}</span>
           </button>
         </div>
       </header>

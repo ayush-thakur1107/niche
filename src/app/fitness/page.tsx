@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Dumbbell, TrendingUp, Trophy, Plus, Trash2 } from 'lucide-react';
 import { CreateNodeModal } from '@/components/common/CreateNodeModal';
 import { NodeItem } from '@/lib/types';
 import styles from '../page.module.css';
 
 export default function FitnessPage() {
+  const router = useRouter();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [customExercises, setCustomExercises] = useState<NodeItem[]>([]);
 
@@ -28,15 +30,15 @@ export default function FitnessPage() {
   const handleDeleteExercise = async (e: React.MouseEvent, ex: NodeItem) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm(`Delete "${ex.title}" from physical records?`)) {
-      try {
-        const res = await fetch(`/api/nodes/${ex.id}`, { method: 'DELETE' });
-        if (res.ok) {
-          setCustomExercises(prev => prev.filter(item => item.id !== ex.id));
-        }
-      } catch (err) {
-        console.error('Failed to delete exercise:', err);
+    try {
+      const res = await fetch(`/api/nodes/${ex.id}`, { method: 'DELETE' });
+      if (res.ok || res.status === 404) {
+        setCustomExercises(prev => prev.filter(item => item.id !== ex.id));
+        router.refresh();
       }
+    } catch (err) {
+      console.error('Failed to delete exercise:', err);
+      setCustomExercises(prev => prev.filter(item => item.id !== ex.id));
     }
   };
 
@@ -231,6 +233,8 @@ export default function FitnessPage() {
                       <button
                         type="button"
                         onClick={(e) => handleDeleteExercise(e, ex)}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}
                         style={{
                           display: 'flex',
                           alignItems: 'center',

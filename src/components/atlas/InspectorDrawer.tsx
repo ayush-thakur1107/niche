@@ -28,6 +28,7 @@ export function InspectorDrawer({
   const [editLevel, setEditLevel] = useState<LearningState>(2);
   const [editTags, setEditTags] = useState('');
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (node) {
@@ -77,14 +78,25 @@ export function InspectorDrawer({
     }
   };
 
-  const handleDelete = async () => {
-    if (confirm(`Delete "${node.title}" from universe?`)) {
+  const handleDelete = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      setTimeout(() => setConfirmDelete(false), 4000);
+      return;
+    }
+    try {
       if (onDeleteNode) {
         onDeleteNode(node.id);
       } else {
         await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
       }
       onClose();
+    } catch (err) {
+      console.error('Failed to delete node:', err);
     }
   };
 
@@ -142,8 +154,11 @@ export function InspectorDrawer({
           </button>
           <button
             onClick={handleDelete}
+            onMouseDown={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
             className={styles.headerDeleteBtn}
-            title={`Delete "${node.title}"`}
+            style={confirmDelete ? { background: 'rgba(239, 68, 68, 0.28)', borderColor: '#ef4444', color: '#fff' } : undefined}
+            title={confirmDelete ? `Click again to confirm deleting "${node.title}"` : `Delete "${node.title}"`}
           >
             <Trash2 size={15} />
           </button>
@@ -316,10 +331,13 @@ export function InspectorDrawer({
         <button
           className={styles.deleteBtn}
           onClick={handleDelete}
-          title={`Delete "${node.title}" from universe`}
+          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          style={confirmDelete ? { background: 'rgba(239, 68, 68, 0.28)', borderColor: '#ef4444', color: '#fff' } : undefined}
+          title={confirmDelete ? `Click again to confirm deleting "${node.title}"` : `Delete "${node.title}" from universe`}
         >
           <Trash2 size={14} />
-          <span>Delete</span>
+          <span>{confirmDelete ? 'Confirm?' : 'Delete'}</span>
         </button>
       </div>
     </div>

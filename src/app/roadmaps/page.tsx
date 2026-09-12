@@ -31,32 +31,28 @@ export default function RoadmapsPage() {
   const handleDeleteRoadmap = async (e: React.MouseEvent, rmId: string, title: string) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm(`Delete roadmap "${title}"?`)) {
-      const updated = roadmapsList.filter(r => r.id !== rmId);
-      setRoadmapsList(updated);
-      try {
-        localStorage.setItem('niche:roadmaps:v2', JSON.stringify(updated));
-        await fetch(`/api/nodes/${rmId}`, { method: 'DELETE' }).catch(() => {});
-        setSkillNodes(prev => prev.filter(s => s.id !== rmId));
-      } catch (err) {
-        console.error('Failed to delete roadmap:', err);
-      }
+    const updated = roadmapsList.filter(r => r.id !== rmId);
+    setRoadmapsList(updated);
+    setSkillNodes(prev => prev.filter(s => s.id !== rmId));
+    try {
+      localStorage.setItem('niche:roadmaps:v2', JSON.stringify(updated));
+      await fetch(`/api/nodes/${rmId}`, { method: 'DELETE' }).catch(() => {});
+    } catch (err) {
+      console.error('Failed to delete roadmap:', err);
     }
   };
 
   const handleDeleteSkillNode = async (e: React.MouseEvent, node: NodeItem) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm(`Delete "${node.title}" from mastery skills?`)) {
-      try {
-        await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' });
-        setSkillNodes(prev => prev.filter(s => s.id !== node.id));
-        const updatedRoadmaps = roadmapsList.filter(r => r.id !== node.id);
-        setRoadmapsList(updatedRoadmaps);
-        localStorage.setItem('niche:roadmaps:v2', JSON.stringify(updatedRoadmaps));
-      } catch (err) {
-        console.error('Failed to delete skill node:', err);
-      }
+    setSkillNodes(prev => prev.filter(s => s.id !== node.id));
+    const updatedRoadmaps = roadmapsList.filter(r => r.id !== node.id);
+    setRoadmapsList(updatedRoadmaps);
+    try {
+      localStorage.setItem('niche:roadmaps:v2', JSON.stringify(updatedRoadmaps));
+      await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' }).catch(() => {});
+    } catch (err) {
+      console.error('Failed to delete skill node:', err);
     }
   };
 
@@ -193,6 +189,8 @@ export default function RoadmapsPage() {
                   <button
                     type="button"
                     onClick={(e) => handleDeleteRoadmap(e, rm.id, rm.title)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -363,6 +361,8 @@ export default function RoadmapsPage() {
                       <button
                         type="button"
                         onClick={(e) => handleDeleteSkillNode(e, node)}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
